@@ -1,0 +1,30 @@
+name: ANEProbe
+options:
+  bundleIdPrefix: com.klincov
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.3"
+targets:
+  ANEProbe:
+    type: application
+    platform: iOS
+    sources:
+      - ANEProbe.swift
+      - ANEDirectTest.m
+      - ANEDirectTest.h
+      - ANEWeightTest.m
+      - ANEWeightTest.h
+      - path: IdentityConv.mlmodelc
+        type: folder
+        buildPhase: resources
+    info:
+      path: Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.klincov.aneprobe
+        DEVELOPMENT_TEAM: SMPDFBGL64
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: Info.plist
+        SWIFT_OBJC_BRIDGING_HEADER: ANEProbe-Bridging-Header.h
+    dependencies: []
