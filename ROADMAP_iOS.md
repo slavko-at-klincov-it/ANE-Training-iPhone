@@ -121,46 +121,77 @@
 
 ### 2.3 Training Step ✅ DONE (2026-03-21)
 - [x] Forward (ANE) → Loss (CPU) → Backward (CPU) → Weight Update (SGD) → Recompile
-- [x] **Loss sinkt monoton** über 10 Schritte: 0.2217 → 0.2196
+- [x] **Loss sinkt monoton** über 10 Schritte (Einzel-Layer): 0.2217 → 0.2196
 - [x] 23.1 ms/step (20ms Compile + 0.18ms ANE Eval + CPU-Gradient)
-- [x] **TRAINING AUF iPHONE ANE FUNKTIONIERT!**
-- [ ] Messe ms/step für Stories-110M Architektur (Full-Scale)
+- [x] **Full 12-Layer Stories-110M Training Engine**: 72 Kernel kompiliert, 20 Steps, Loss 10.4266→10.4253
+- [x] **Loss DECREASING über 20 Steps mit 5 Adam Updates**
+- [x] Dynamic Spatial Packing getestet: **0.119 ms/iter** (189x schneller als Recompile)
+- [ ] Dynamic Packing in Training Engine integrieren
 - [ ] Vergleiche mit macOS Training-Performance
-- [ ] Dynamic Spatial Packing statt Recompile für Speed (0.3ms statt 20ms)
 
 ### 2.4 Memory Management
-- [ ] iOS Memory Limits ermitteln (typisch 2-3GB für Foreground-App)
-- [ ] Maximale Modellgröße bestimmen die in den Speicher passt
-- [ ] Gradient Checkpointing wenn nötig
+- [x] 12-Layer Stories-110M + Adam State passt in iPhone-Speicher (~1.3GB)
+- [x] Checkpoint Save 1.3GB in 2.3s, Load in 1.0s
+- [ ] Gradient Checkpointing wenn nötig für größere Modelle
 
 ---
 
 ## Phase 3: Background Training & Personal AI
 
-### 3.1 Background Training
-- [ ] BGProcessingTaskRequest für Nacht-Training implementieren
-- [ ] Thermal-State Monitoring (`ProcessInfo.thermalState`)
-- [ ] Adaptive Batch-Size bei Thermal Throttling
-- [ ] Automatic Checkpointing (alle N Steps)
-- [ ] Resume nach App-Kill
+### 3.1 Background Training ✅ CODE DONE (2026-03-21)
+- [x] BGProcessingTaskRequest implementiert (`com.klincov.aneprobe.training`)
+- [x] TrainingSession (ObservableObject) mit start/pause/stop
+- [x] ANEBackgroundTrainingManager Singleton mit Scheduling
+- [x] Info.plist: UIBackgroundModes + BGTaskSchedulerPermittedIdentifiers
+- [ ] Live-Test im Background (App minimieren, über Nacht laufen lassen)
 
-### 3.2 Data Pipeline
-- [ ] Tokenizer auf iOS (SentencePiece oder BPE)
-- [ ] Lokale Daten laden (Dateien, Notizen, etc.)
-- [ ] Pre-Tokenisierung im Background
+### 3.2 Thermal Management ✅ CODE DONE (2026-03-21)
+- [x] ThermalLevel Monitoring (Nominal/Fair/Serious/Critical)
+- [x] ANE Throughput Monitor (Rolling Average, Throttle Detection)
+- [x] Adaptive Training Controller (Delay pro Thermal Level)
+- [x] ANEThermalMonitor.swift für SwiftUI
+- [ ] 60s Thermal Stress Test laufen lassen
 
-### 3.3 Inference Server
+### 3.3 Checkpoint System ✅ DONE (2026-03-21)
+- [x] Save (2.3s) + Load (1.0s) für 1.3GB State
+- [x] Atomic Write (.tmp + rename)
+- [x] Auto-Checkpoint bei Background/Thermal Events
+- [x] Slot-Rotation (ckpt_0, ckpt_1)
+- [x] Pretrained Weight Loading (llama2.c Format)
+
+### 3.4 Data Pipeline ✅ DONE (2026-03-21)
+- [x] Pre-tokenized .bin Loading (mmap, same Format wie macOS)
+- [x] Embedding Lookup + Backward
+- [x] Cross-Entropy Loss + Gradient (vDSP/Accelerate)
+- [x] Alle Tests PASS
+- [ ] Echte Trainingsdaten (TinyStories .bin) aufs iPhone kopieren
+
+### 3.5 Dynamic Spatial Packing ✅ TESTED (2026-03-21)
+- [x] Per-Channel Scale: 0.119 ms/iter (189x schneller)
+- [x] Full Weight Matrix: Compile Fail (matmul im Dynamic Context)
+- [ ] In Training Engine integrieren (Per-Channel Ansatz für RMSNorm Weights)
+
+### 3.6 Inference Server
 - [ ] Trainiertes Modell für Inference laden
 - [ ] Chat-Interface in der App
 - [ ] Token-Streaming
 
-### 3.4 App Store Variante (optional)
+### 3.7 App Store Variante (optional)
 - [ ] CoreML-Wrapper statt Private API
 - [ ] Alle privaten API-Aufrufe hinter Feature-Flag
 - [ ] App Review Guidelines einhalten
+
+### 3.8 Training Dashboard ✅ CODE DONE (2026-03-21)
+- [x] TrainingDashboardView (SwiftUI)
+- [x] Status, Loss, Steps, Thermal Anzeige
+- [x] Start/Pause/Stop Buttons
+- [ ] Grafische Loss-Kurve
 
 ---
 
 ## Aktueller Status
 
-**Phase 1 + 1.5 + 2 (Kernels + Training Step) KOMPLETT. Training auf iPhone ANE bewiesen! Phase 3 (Background Training & Personal AI) ist der nächste Schritt.**
+**Phase 1 + 1.5 + 2 + 3 (größtenteils) KOMPLETT.**
+**12-Layer Stories-110M Training auf iPhone ANE bewiesen — Loss sinkt, 72 Kernel, Adam Optimizer.**
+**Infrastruktur steht: Checkpoint, Thermal, Background Training, Data Pipeline, Dashboard.**
+**Offen: Echte Trainingsdaten, Inference UI, App Store Variante.**
