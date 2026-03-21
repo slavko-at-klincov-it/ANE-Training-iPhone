@@ -14,6 +14,40 @@ targets:
       - ANEDirectTest.h
       - ANEWeightTest.m
       - ANEWeightTest.h
+      - ANERE.m
+      - ANERE.h
+      - ANEReduceDebug.m
+      - ANEReduceDebug.h
+      - ANECompileLimitStress.m
+      - ANECompileLimitStress.h
+      - ANETrainingConfig.h
+      - ANERMSNorm.m
+      - ANERMSNorm.h
+      - ANELinear.m
+      - ANELinear.h
+      - ANEAttention.m
+      - ANEAttention.h
+      - ANEFFN.m
+      - ANEFFN.h
+      - ANEBackward.m
+      - ANEBackward.h
+      - ANETrainStep.m
+      - ANETrainStep.h
+      - ANEThermal.m
+      - ANEThermal.h
+      - ANEDynamicTrain.m
+      - ANEDynamicTrain.h
+      - ANECheckpoint.m
+      - ANECheckpoint.h
+      - ANEDataPipeline.m
+      - ANEDataPipeline.h
+      - ANEStoriesMIL.h
+      - ANEStoriesCPUOps.h
+      - ANETrainingEngine.m
+      - ANETrainingEngine.h
+      - ANEBackgroundTraining.swift
+      - ANEThermalMonitor.swift
+      - TrainingDashboardView.swift
       - path: IdentityConv.mlmodelc
         type: folder
         buildPhase: resources
@@ -27,4 +61,5 @@ targets:
         SWIFT_VERSION: "5.9"
         INFOPLIST_FILE: Info.plist
         SWIFT_OBJC_BRIDGING_HEADER: ANEProbe-Bridging-Header.h
-    dependencies: []
+    dependencies:
+      - sdk: Accelerate.framework

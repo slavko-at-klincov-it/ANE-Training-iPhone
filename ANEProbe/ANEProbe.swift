@@ -242,17 +242,81 @@ class ANEProber {
         lines.append("\n=== COREML INFERENCE TEST ===")
         lines.append(testCoreMLInference())
 
-        // 9. DIRECT ANE TEST
-        lines.append("\n=== DIRECT ANE COMPILE+EVAL TEST ===")
-        if let result = ane_direct_test() {
+        // PHASE 2: Layer tests
+        lines.append("\n=== PHASE 2: RMSNORM TEST ===")
+        if let result = ane_rmsnorm_test() {
             lines.append(result as String)
         }
 
-        // 10. WEIGHT UPDATE TEST
-        lines.append("\n=== WEIGHT UPDATE TEST ===")
-        if let result = ane_weight_test() {
+        lines.append("\n=== PHASE 2: LINEAR TEST ===")
+        if let result = ane_linear_test() {
             lines.append(result as String)
         }
+
+        lines.append("\n=== PHASE 2: ATTENTION TEST ===")
+        if let result = ane_attention_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== PHASE 2: FFN (SwiGLU) TEST ===")
+        if let result = ane_ffn_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== PHASE 2: FFN BACKWARD TEST ===")
+        if let result = ane_ffn_bwd_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== PHASE 2: ATTENTION BACKWARD TEST ===")
+        if let result = ane_attention_bwd_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== PHASE 2.3: TRAINING STEP TEST ===")
+        if let result = ane_train_step_test() {
+            lines.append(result as String)
+        }
+
+        // PHASE 3: New components
+        lines.append("\n=== DYNAMIC SPATIAL PACKING TRAIN ===")
+        if let result = ane_dynamic_train_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== CHECKPOINT TEST ===")
+        ane_checkpoint_test()
+        lines.append("  (Checkpoint test logs to stderr)")
+
+        lines.append("\n=== DATA PIPELINE TEST ===")
+        if let result = ane_data_pipeline_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== FULL TRAINING ENGINE TEST ===")
+        if let result = ane_training_engine_test() {
+            lines.append(result as String)
+        }
+
+        lines.append("\n=== THERMAL STRESS TEST ===")
+        // Skip 60s thermal test by default — uncomment to run
+        // if let result = ane_thermal_test() { lines.append(result as String) }
+        lines.append("  (Skipped — 60s test, uncomment to run)")
+
+        /* Phase 1/1.5 tests — disabled for speed, uncomment to re-run
+        lines.append("\n=== DIRECT ANE COMPILE+EVAL TEST ===")
+        if let result = ane_direct_test() { lines.append(result as String) }
+        lines.append("\n=== WEIGHT UPDATE TEST ===")
+        if let result = ane_weight_test() { lines.append(result as String) }
+        lines.append("\n=== PHASE 1.5: SRAM BOUNDARY PROBE ===")
+        if let result = ane_re_sram_probe() { lines.append(result as String) }
+        lines.append("\n=== PHASE 1.5: MIL OP COVERAGE ===")
+        if let result = ane_re_op_coverage() { lines.append(result as String) }
+        lines.append("\n=== PHASE 1.5: PERFORMANCE STATS ===")
+        if let result = ane_re_perf_stats() { lines.append(result as String) }
+        lines.append("\n=== PHASE 1.5: COMPILE LIMITS ===")
+        if let result = ane_re_compile_limits() { lines.append(result as String) }
+        */
 
         lines.append("\n=== PROBE DONE ===")
         return lines.joined(separator: "\n")
