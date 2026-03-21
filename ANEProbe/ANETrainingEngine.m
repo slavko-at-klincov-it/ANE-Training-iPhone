@@ -865,23 +865,28 @@ NSString *ane_training_engine_test(void) {
     }
     [log appendFormat:@"Init OK. Compile count: %d\n", s->compile_count];
 
-    // Run 5 steps
-    float losses[5];
-    for (int i = 0; i < 5; i++) {
-        losses[i] = ane_train_step(s);
-        [log appendFormat:@"Step %d: loss=%.4f\n", i, losses[i]];
-        if (losses[i] < 0) {
+    // Run 20 steps (enough for 5 Adam updates with ACCUM_STEPS=4)
+    int nsteps = 20;
+    float first_loss = 0, last_loss = 0;
+    for (int i = 0; i < nsteps; i++) {
+        float loss = ane_train_step(s);
+        if (i == 0) first_loss = loss;
+        last_loss = loss;
+        if (i < 8 || i == nsteps-1 || (i+1) % 4 == 0)
+            [log appendFormat:@"Step %d: loss=%.4f%s\n", i, loss,
+                (i+1) % IOS_ACCUM_STEPS == 0 ? @" [Adam update + recompile]" : @""];
+        if (loss < 0) {
             [log appendFormat:@"FAIL: negative loss at step %d\n", i];
             ane_train_free(s);
             return log;
         }
     }
 
-    // Check loss trend (first loss should be near ln(VOCAB) ~ 10.37)
-    [log appendFormat:@"\nFirst loss: %.4f (expected ~%.2f for random init)\n", losses[0], logf(VOCAB)];
-    bool trend_ok = losses[4] < losses[0];
+    // Check loss trend
+    [log appendFormat:@"\nFirst loss: %.4f (expected ~%.2f for random init)\n", first_loss, logf(VOCAB)];
+    bool trend_ok = last_loss < first_loss;
     [log appendFormat:@"Loss trend: %.4f -> %.4f (%s)\n",
-        losses[0], losses[4], trend_ok ? "DECREASING - OK" : "NOT DECREASING - may need more steps"];
+        first_loss, last_loss, trend_ok ? "DECREASING - OK" : "NOT DECREASING - may need more steps"];
 
     [log appendFormat:@"\nFinal state: step=%d adam_t=%d\n", ane_train_current_step(s), s->adam_t];
 
