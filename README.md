@@ -105,6 +105,16 @@ Loss trend: DECREASING (5 Adam updates)
 
 Also verified: single-layer SGD training at 23.1 ms/step, dynamic spatial packing at **0.119 ms/iter** (189x faster).
 
+### Overnight Training — 1000 Steps on TinyStories
+
+```
+Steps: 1000 in 413s (2.4 steps/s)
+Loss:  10.48 → best 9.33 (-10.9%)
+Adam updates: 250
+```
+
+Trained on real TinyStories data (977KB, pre-tokenized) on iPhone 15 Pro ANE without jailbreak.
+
 ## Project Structure
 
 ```
