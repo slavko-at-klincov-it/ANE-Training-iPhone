@@ -897,3 +897,104 @@ NSString *ane_training_engine_test(void) {
     return log;
     }
 }
+
+// ===== Overnight training: long run with real data =====
+NSString *ane_overnight_training(int max_steps) {
+    @autoreleasepool {
+    NSMutableString *log = [NSMutableString string];
+    [log appendString:@"=== ANE Overnight Training ===\n"];
+
+    // Try to find bundled training data
+    NSString *dataPath = [[NSBundle mainBundle] pathForResource:@"tinystories_data00" ofType:@"bin"];
+    if (!dataPath) {
+        // Fall back to dummy data
+        [log appendString:@"No bundled training data, using random tokens\n"];
+        NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"ane_overnight_tokens.bin"];
+        size_t n = 100000; // 100K tokens
+        uint16_t *buf = (uint16_t *)malloc(n * 2);
+        srand48(42);
+        for (size_t i = 0; i < n; i++) buf[i] = (uint16_t)(drand48() * (VOCAB - 1));
+        NSData *d = [NSData dataWithBytesNoCopy:buf length:n * 2 freeWhenDone:YES];
+        [d writeToFile:tmpPath atomically:YES];
+        dataPath = tmpPath;
+    } else {
+        [log appendFormat:@"Using bundled data: %@\n", [dataPath lastPathComponent]];
+    }
+
+    struct stat st;
+    stat([dataPath UTF8String], &st);
+    size_t n_tokens = st.st_size / 2;
+    [log appendFormat:@"Tokens: %zu (%.1f KB)\n", n_tokens, st.st_size / 1024.0];
+    [log appendFormat:@"Target: %d steps, ACCUM_STEPS=%d\n", max_steps, IOS_ACCUM_STEPS];
+
+    // Init with random weights
+    [log appendString:@"Initializing...\n"];
+    uint64_t t_init = mach_absolute_time();
+    ANETrainState *s = ane_train_init(NULL, [dataPath UTF8String]);
+    if (!s) {
+        [log appendString:@"FAIL: init returned NULL\n"];
+        return log;
+    }
+    double init_ms = (double)(mach_absolute_time() - t_init) * g_tb.numer / g_tb.denom / 1e6;
+    [log appendFormat:@"Init OK: %d kernels, %.1fs\n", s->compile_count, init_ms/1000];
+
+    // Training loop with periodic logging
+    float best_loss = 999.0f;
+    float first_loss = 0;
+    uint64_t t_start = mach_absolute_time();
+    int log_interval = max_steps > 200 ? 50 : 10;
+    int ckpt_interval = max_steps > 500 ? 100 : 50;
+
+    // Log to file on device for persistence
+    NSString *logPath = [NSString stringWithFormat:@"%@/ane_training_log.txt",
+        [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]];
+    FILE *logFile = fopen([logPath UTF8String], "w");
+    if (logFile) fprintf(logFile, "step,loss,ms_step,adam_t,compile_count\n");
+
+    for (int step = 0; step < max_steps; step++) {
+        uint64_t t_step = mach_absolute_time();
+        float loss = ane_train_step(s);
+        double step_ms = (double)(mach_absolute_time() - t_step) * g_tb.numer / g_tb.denom / 1e6;
+
+        if (step == 0) first_loss = loss;
+        if (loss < best_loss) best_loss = loss;
+
+        // Log to file
+        if (logFile) {
+            fprintf(logFile, "%d,%.6f,%.1f,%d,%d\n", step, loss, step_ms, s->adam_t, s->compile_count);
+            if (step % 10 == 0) fflush(logFile);
+        }
+
+        // Log to console
+        if (step < 10 || step % log_interval == 0 || step == max_steps - 1) {
+            double elapsed_s = (double)(mach_absolute_time() - t_start) * g_tb.numer / g_tb.denom / 1e9;
+            double steps_per_s = (step + 1) / elapsed_s;
+            double eta_s = (max_steps - step - 1) / steps_per_s;
+            [log appendFormat:@"step %-5d loss=%.4f best=%.4f ms/step=%.0f adam_t=%d steps/s=%.1f ETA=%.0fs\n",
+                step, loss, best_loss, step_ms, s->adam_t, steps_per_s, eta_s];
+            // Also print to stderr for console capture
+            fprintf(stderr, "ANEPROBE: step %-5d loss=%.4f best=%.4f ms/step=%.0f adam_t=%d\n",
+                step, loss, best_loss, step_ms, s->adam_t);
+        }
+
+        // Checkpoint
+        if (step > 0 && step % ckpt_interval == 0) {
+            fprintf(stderr, "ANEPROBE: [checkpoint at step %d]\n", step);
+        }
+    }
+
+    if (logFile) fclose(logFile);
+
+    double total_s = (double)(mach_absolute_time() - t_start) * g_tb.numer / g_tb.denom / 1e9;
+
+    [log appendFormat:@"\n=== Training Complete ===\n"];
+    [log appendFormat:@"Steps: %d in %.1fs (%.1f steps/s)\n", max_steps, total_s, max_steps/total_s];
+    [log appendFormat:@"Loss: %.4f → %.4f (best: %.4f)\n", first_loss, ane_train_current_loss(s), best_loss];
+    [log appendFormat:@"Adam updates: %d\n", s->adam_t];
+    [log appendFormat:@"Compiles: %d\n", s->compile_count];
+    [log appendFormat:@"Log saved to: %@\n", logPath];
+
+    ane_train_free(s);
+    return log;
+    }
+}

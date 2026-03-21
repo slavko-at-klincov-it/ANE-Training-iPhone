@@ -24,5 +24,8 @@ void ane_train_save(ANETrainState *state);
 // Free all resources
 void ane_train_free(ANETrainState *state);
 
-// Quick test: init with random weights + dummy data, run 5 steps, verify loss decreases
+// Quick test: init with random weights + dummy data, run 20 steps, verify loss decreases
 NSString *ane_training_engine_test(void);
+
+// Long training run with bundled TinyStories data (or dummy if not available)
+NSString *ane_overnight_training(int max_steps);

@@ -51,6 +51,8 @@ targets:
       - path: IdentityConv.mlmodelc
         type: folder
         buildPhase: resources
+      - path: tinystories_data00.bin
+        buildPhase: resources
     info:
       path: Info.plist
     settings:

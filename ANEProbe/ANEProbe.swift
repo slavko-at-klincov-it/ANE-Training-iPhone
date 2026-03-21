@@ -15,19 +15,28 @@ struct ANEProbeApp: App {
 }
 
 struct ANEProbeView: View {
-    @State private var output = "Starting probe..."
+    @State private var output = "Starting overnight training..."
     @State private var isRunning = true
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("ANE Probe").font(.title.bold())
+            Text("ANE Training").font(.title.bold())
 
-            Button("Probe ANE") {
-                isRunning = true
-                runProbe()
+            HStack {
+                Button("Overnight Train (1000 steps)") {
+                    isRunning = true
+                    runOvernightTraining()
+                }
+                .disabled(isRunning)
+                .buttonStyle(.borderedProminent)
+
+                Button("Quick Probe") {
+                    isRunning = true
+                    runProbe()
+                }
+                .disabled(isRunning)
+                .buttonStyle(.bordered)
             }
-            .disabled(isRunning)
-            .buttonStyle(.borderedProminent)
 
             ScrollView {
                 Text(output)
@@ -40,7 +49,28 @@ struct ANEProbeView: View {
             .cornerRadius(8)
         }
         .padding()
-        .onAppear { runProbe() }
+        .onAppear {
+            // Keep screen awake for training
+            UIApplication.shared.isIdleTimerDisabled = true
+            runOvernightTraining()
+        }
+    }
+
+    func runOvernightTraining() {
+        Task.detached {
+            let result = ane_overnight_training(1000)
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            fputs("ANEPROBE: === OVERNIGHT COMPLETE ===\n", stderr)
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+            }
+        }
     }
 
     func runProbe() {
@@ -299,9 +329,7 @@ class ANEProber {
         }
 
         lines.append("\n=== THERMAL STRESS TEST ===")
-        // Skip 60s thermal test by default — uncomment to run
-        // if let result = ane_thermal_test() { lines.append(result as String) }
-        lines.append("  (Skipped — 60s test, uncomment to run)")
+        if let result = ane_thermal_test() { lines.append(result as String) }
 
         /* Phase 1/1.5 tests — disabled for speed, uncomment to re-run
         lines.append("\n=== DIRECT ANE COMPILE+EVAL TEST ===")
