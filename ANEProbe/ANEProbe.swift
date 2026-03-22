@@ -23,7 +23,7 @@ struct ANEProbeView: View {
             Text("ANE Training").font(.title.bold())
 
             HStack {
-                Button("Overnight Train (1000 steps)") {
+                Button("Overnight Train (8 hours)") {
                     isRunning = true
                     runOvernightTraining()
                 }
@@ -58,17 +58,18 @@ struct ANEProbeView: View {
 
     func runOvernightTraining() {
         Task.detached {
-            let result = ane_overnight_training(1000)
+            // TIME-BASED training: 8 hours overnight
+            let result = ane_timed_training(8.0)
             let resultStr = result as String? ?? "nil"
             for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
                 let s = String(line)
                 logger.notice("\(s, privacy: .public)")
                 fputs("ANEPROBE: \(s)\n", stderr)
             }
-            fputs("ANEPROBE: === OVERNIGHT COMPLETE ===\n", stderr)
             await MainActor.run {
                 output = resultStr
                 isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
             }
         }
     }

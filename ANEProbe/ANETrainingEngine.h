@@ -29,3 +29,8 @@ NSString *ane_training_engine_test(void);
 
 // Long training run with bundled TinyStories data (or dummy if not available)
 NSString *ane_overnight_training(int max_steps);
+
+// TIME-BASED training: runs for `hours` hours, iterating with LR adjustments.
+// Logs to Documents/ane_training_log.txt (CSV) and stderr.
+// Saves checkpoint every 500 steps. Adjusts LR on plateau.
+NSString *ane_timed_training(float hours);

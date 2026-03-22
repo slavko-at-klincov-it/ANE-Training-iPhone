@@ -998,3 +998,194 @@ NSString *ane_overnight_training(int max_steps) {
     return log;
     }
 }
+
+// ===== TIME-BASED training: runs for N hours, auto-iterates =====
+NSString *ane_timed_training(float hours) {
+    @autoreleasepool {
+    NSMutableString *log = [NSMutableString string];
+    [log appendFormat:@"=== ANE Timed Training (%.1f hours) ===\n", hours];
+
+    // Find data
+    NSString *dataPath = [[NSBundle mainBundle] pathForResource:@"tinystories_data00" ofType:@"bin"];
+    if (!dataPath) {
+        [log appendString:@"No bundled training data, creating dummy\n"];
+        NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"ane_timed_tokens.bin"];
+        size_t n = 100000;
+        uint16_t *buf = (uint16_t *)malloc(n * 2);
+        srand48(42);
+        for (size_t i = 0; i < n; i++) buf[i] = (uint16_t)(drand48() * (VOCAB - 1));
+        NSData *d = [NSData dataWithBytesNoCopy:buf length:n * 2 freeWhenDone:YES];
+        [d writeToFile:tmpPath atomically:YES];
+        dataPath = tmpPath;
+    } else {
+        [log appendFormat:@"Data: %@\n", [dataPath lastPathComponent]];
+    }
+
+    // Init
+    [log appendString:@"Initializing...\n"];
+    fprintf(stderr, "ANEPROBE: Initializing timed training (%.1f hours)...\n", hours);
+    ANETrainState *s = ane_train_init(NULL, [dataPath UTF8String]);
+    if (!s) {
+        [log appendString:@"FAIL: init returned NULL\n"];
+        return log;
+    }
+    [log appendFormat:@"Init OK: %d kernels compiled\n", s->compile_count];
+    fprintf(stderr, "ANEPROBE: Init OK, %d kernels. Starting training...\n", s->compile_count);
+
+    // Log file
+    NSString *docsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *logPath = [docsDir stringByAppendingPathComponent:@"ane_timed_training_log.csv"];
+    FILE *logFile = fopen([logPath UTF8String], "w");
+    if (logFile) fprintf(logFile, "step,loss,best_loss,lr,ms_step,adam_t,elapsed_min,phase\n");
+
+    // Training parameters
+    float lr = 3e-4f;
+    float lr_min = 1e-5f;
+    float best_loss = 999.0f;
+    float phase_start_loss = 999.0f;
+    int plateau_count = 0;
+    int phase = 1;
+    int phase_start_step = 0;
+    int total_steps = 0;
+
+    // Timing
+    double target_seconds = hours * 3600.0;
+    uint64_t t_start = mach_absolute_time();
+    mach_timebase_info_data_t tb; mach_timebase_info(&tb);
+
+    #define ELAPSED_S() ((double)(mach_absolute_time() - t_start) * tb.numer / tb.denom / 1e9)
+    #define ELAPSED_MIN() (ELAPSED_S() / 60.0)
+
+    // Checkpoint & log intervals
+    int ckpt_interval = 500;
+    int log_interval = 50;
+    int plateau_window = 200; // steps to check for plateau
+
+    // Rolling loss for plateau detection
+    float loss_window[200];
+    int loss_idx = 0;
+    int loss_count = 0;
+
+    fprintf(stderr, "ANEPROBE: ========================================\n");
+    fprintf(stderr, "ANEPROBE: Target: %.1f hours (%.0f seconds)\n", hours, target_seconds);
+    fprintf(stderr, "ANEPROBE: LR: %.1e, Plateau window: %d steps\n", lr, plateau_window);
+    fprintf(stderr, "ANEPROBE: ========================================\n");
+
+    // ===== MAIN TIME-BASED LOOP =====
+    while (ELAPSED_S() < target_seconds) {
+        uint64_t t_step = mach_absolute_time();
+
+        // Set current LR on state
+        s->lr = lr;
+
+        float loss = ane_train_step(s);
+        double step_ms = (double)(mach_absolute_time() - t_step) * tb.numer / tb.denom / 1e6;
+        total_steps++;
+
+        if (loss < best_loss) best_loss = loss;
+
+        // Rolling loss window
+        loss_window[loss_idx % plateau_window] = loss;
+        loss_idx++;
+        if (loss_count < plateau_window) loss_count++;
+
+        // Log to file
+        if (logFile) {
+            fprintf(logFile, "%d,%.6f,%.6f,%.2e,%.1f,%d,%.1f,%d\n",
+                total_steps, loss, best_loss, lr, step_ms, s->adam_t, ELAPSED_MIN(), phase);
+            if (total_steps % 10 == 0) fflush(logFile);
+        }
+
+        // Console log
+        if (total_steps <= 10 || total_steps % log_interval == 0) {
+            double elapsed = ELAPSED_S();
+            double remaining = target_seconds - elapsed;
+            double steps_per_s = total_steps / elapsed;
+            fprintf(stderr, "ANEPROBE: step %-6d loss=%.4f best=%.4f lr=%.1e adam=%d "
+                "%.0fms/step %.1fsteps/s elapsed=%.0fm remaining=%.0fm phase=%d\n",
+                total_steps, loss, best_loss, lr, s->adam_t,
+                step_ms, steps_per_s, elapsed/60, remaining/60, phase);
+        }
+
+        // Checkpoint
+        if (total_steps % ckpt_interval == 0) {
+            fprintf(stderr, "ANEPROBE: [CHECKPOINT step %d, loss=%.4f, best=%.4f, lr=%.1e]\n",
+                total_steps, loss, best_loss, lr);
+            // Could call ane_train_save(s) here if checkpoint system is wired up
+        }
+
+        // Plateau detection: every plateau_window steps, check if loss improved
+        if (total_steps > 0 && total_steps % plateau_window == 0 && loss_count >= plateau_window) {
+            // Compare average of first half vs second half of window
+            float avg_first = 0, avg_second = 0;
+            int half = plateau_window / 2;
+            for (int i = 0; i < half; i++) {
+                avg_first += loss_window[(loss_idx - plateau_window + i) % plateau_window];
+                avg_second += loss_window[(loss_idx - half + i) % plateau_window];
+            }
+            avg_first /= half;
+            avg_second /= half;
+
+            float improvement = (avg_first - avg_second) / avg_first;
+
+            if (improvement < 0.001f) {
+                // Less than 0.1% improvement → plateau
+                plateau_count++;
+                fprintf(stderr, "ANEPROBE: [PLATEAU #%d at step %d: avg %.4f→%.4f (%.2f%% improvement), "
+                    "reducing LR %.1e→%.1e]\n",
+                    plateau_count, total_steps, avg_first, avg_second, improvement*100, lr, lr*0.5f);
+
+                lr *= 0.5f;
+                if (lr < lr_min) {
+                    // LR too low — reset to initial with new phase
+                    phase++;
+                    lr = 3e-4f * powf(0.7f, phase - 1); // each phase starts slightly lower
+                    if (lr < lr_min) lr = lr_min;
+                    phase_start_step = total_steps;
+                    phase_start_loss = best_loss;
+                    fprintf(stderr, "ANEPROBE: [NEW PHASE %d: LR reset to %.1e at step %d]\n",
+                        phase, lr, total_steps);
+                }
+            } else {
+                // Good progress — log it
+                if (total_steps % (plateau_window * 2) == 0) {
+                    fprintf(stderr, "ANEPROBE: [PROGRESS: %.2f%% improvement over last %d steps, LR=%.1e]\n",
+                        improvement*100, plateau_window, lr);
+                }
+            }
+        }
+    }
+
+    if (logFile) fclose(logFile);
+
+    double total_s = ELAPSED_S();
+    double total_min = total_s / 60.0;
+    double total_hr = total_s / 3600.0;
+
+    [log appendFormat:@"\n=== Timed Training Complete ===\n"];
+    [log appendFormat:@"Duration: %.1f hours (%.0f minutes)\n", total_hr, total_min];
+    [log appendFormat:@"Steps: %d (%.1f steps/s)\n", total_steps, total_steps/total_s];
+    [log appendFormat:@"Best loss: %.4f\n", best_loss];
+    [log appendFormat:@"Final loss: %.4f\n", s->last_loss];
+    [log appendFormat:@"Final LR: %.1e\n", lr];
+    [log appendFormat:@"Phases: %d\n", phase];
+    [log appendFormat:@"Plateaus detected: %d\n", plateau_count];
+    [log appendFormat:@"Adam updates: %d\n", s->adam_t];
+    [log appendFormat:@"Compiles: %d\n", s->compile_count];
+    [log appendFormat:@"Log: %@\n", logPath];
+
+    fprintf(stderr, "ANEPROBE: ========================================\n");
+    fprintf(stderr, "ANEPROBE: TRAINING COMPLETE\n");
+    fprintf(stderr, "ANEPROBE: Duration: %.1f hours, %d steps\n", total_hr, total_steps);
+    fprintf(stderr, "ANEPROBE: Best loss: %.4f, Final: %.4f\n", best_loss, s->last_loss);
+    fprintf(stderr, "ANEPROBE: Phases: %d, Plateaus: %d, Final LR: %.1e\n", phase, plateau_count, lr);
+    fprintf(stderr, "ANEPROBE: ========================================\n");
+    fprintf(stderr, "ANEPROBE: === TIMED TRAINING COMPLETE ===\n");
+
+    #undef ELAPSED_S
+    #undef ELAPSED_MIN
+
+    ane_train_free(s);
+    return log;
+    }
+}
