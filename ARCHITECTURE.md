@@ -175,7 +175,7 @@ Weights werden als BLOBFILE in das MIL eingebettet ("baked weights"). Bei jedem 
 
 | Datei | Zeilen | Funktion |
 |:--|:-:|:--|
-| **ANETrainingEngine.m** | 900+ | Haupttrainingsschleife. Portiert von macOS `train_large.m`. |
+| **ANETrainingEngine.m** | 1191 | Haupttrainingsschleife + 8h-Overnight-Training. Portiert von macOS `train_large.m`. |
 | **ANETrainingEngine.h** | 30 | Public C API: init/step/save/free |
 
 **ANETrainState** Struktur:

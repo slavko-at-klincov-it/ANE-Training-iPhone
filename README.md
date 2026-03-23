@@ -225,47 +225,55 @@ For detailed benchmarks, hardware specs, and memory layout see [ARCHITECTURE.md]
 ```
 ANEProbe/
 ├── Core Infrastructure
-│   ├── ANETrainingConfig.h        # ANE runtime, IOSurface I/O, structs
-│   ├── ANEStoriesMIL.h            # 7 MIL kernel generators
-│   └── ANEStoriesCPUOps.h         # CPU ops (RMSNorm, Adam, loss)
+│   ├── ANETrainingConfig.h          # ANE runtime, IOSurface I/O, structs, compile/eval
+│   ├── ANEStoriesMIL.h              # 7 MIL kernel generators (attention, FFN, backward)
+│   └── ANEStoriesCPUOps.h           # CPU ops: RMSNorm, Adam, cross-entropy, embedding
 │
 ├── Training Engine
-│   ├── ANETrainingEngine.m/.h     # Full 12-layer training loop
-│   ├── ANEDataPipeline.m/.h       # Token loading, embedding, loss
-│   └── ANECheckpoint.m/.h         # Save/load training state
+│   ├── ANETrainingEngine.m/.h       # Full 12-layer training loop + 8h overnight mode
+│   ├── ANEDataPipeline.m/.h         # Token loading (mmap), batch prep, loss computation
+│   └── ANECheckpoint.m/.h           # Checkpoint save/load, crash-safety, pretrained loading
 │
 ├── System Integration
-│   ├── ANEBackgroundTraining.swift # BGProcessingTask scheduling
-│   ├── ANEThermal.m/.h            # Thermal monitoring + adaptation
-│   ├── ANEThermalMonitor.swift     # SwiftUI thermal state
-│   └── ANEDynamicTrain.m/.h       # Dynamic spatial packing (0.12ms)
+│   ├── ANEBackgroundTraining.swift   # BGProcessingTask scheduling + TrainingSession
+│   ├── ANEThermal.m/.h              # Thermal monitoring, throttle detection, adaptive control
+│   ├── ANEThermalMonitor.swift       # SwiftUI thermal state observer
+│   └── ANEDynamicTrain.m/.h         # Dynamic spatial packing (0.12ms/iter, no recompile)
 │
 ├── UI
-│   ├── ANEProbe.swift             # Main app + overnight training
-│   └── TrainingDashboardView.swift # Training status dashboard
+│   ├── ANEProbe.swift               # Main app, overnight training launcher
+│   ├── TrainingDashboardView.swift   # Training status: loss, steps, thermal, start/stop
+│   └── ANEProbe-Bridging-Header.h   # Swift↔ObjC bridge (all test imports)
 │
 ├── Research & Tests
-│   ├── ANEDirectTest.m            # Phase 1: ANE access proof
-│   ├── ANEWeightTest.m            # Phase 1: Weight update strategies
-│   ├── ANERE.m                    # Phase 1.5: Hardware reverse engineering
-│   ├── ANERMSNorm.m              # Phase 2: RMSNorm correctness
-│   ├── ANELinear.m               # Phase 2: Linear layer correctness
-│   ├── ANEAttention.m            # Phase 2: Attention correctness
-│   ├── ANEFFN.m                  # Phase 2: FFN correctness
-│   ├── ANEBackward.m             # Phase 2: Backward pass correctness
-│   └── ANETrainStep.m            # Phase 2.3: Training proof
+│   ├── ANEDirectTest.m/.h           # Phase 1: MIL compile + eval proof
+│   ├── ANEWeightTest.m/.h           # Phase 1: Recompile vs dynamic packing
+│   ├── ANERE.m/.h                   # Phase 1.5: SRAM, op coverage, perf stats
+│   ├── ANEReduceDebug.m/.h          # Phase 1.5: 16KB IOSurface bug investigation
+│   ├── ANECompileLimitStress.m/.h   # Phase 1.5: 239 model load limit stress test
+│   ├── ANERMSNorm.m/.h              # Phase 2: RMSNorm forward + backward correctness
+│   ├── ANELinear.m/.h               # Phase 2: Linear (1x1 conv) correctness
+│   ├── ANEAttention.m/.h            # Phase 2: Full SDPA attention correctness
+│   ├── ANEFFN.m/.h                  # Phase 2: SwiGLU FFN correctness
+│   ├── ANEBackward.m/.h             # Phase 2: FFN + attention backward correctness
+│   └── ANETrainStep.m/.h            # Phase 2.3: Single-layer training proof
+│
+├── Config
+│   ├── project.yml                  # Xcode project config (xcodegen)
+│   └── Info.plist                   # App config + BGTask permissions
 │
 └── Data
-    ├── tinystories_data00.bin     # Pre-tokenized training data (977KB)
-    └── IdentityConv.mlmodelc/     # CoreML test model
+    ├── tinystories_data00.bin       # Pre-tokenized TinyStories (977KB, ~488K tokens)
+    └── IdentityConv.mlmodelc/       # CoreML identity conv test model
 ```
 
 ## Documentation
 
 | Document | Content |
 |:--|:--|
+| [INTEGRATION.md](INTEGRATION.md) | **How to integrate ANE training into your own app** — API reference, code examples, data format |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture, data flow, layer diagrams, memory layout, ANE hardware specs |
-| [iOS_ANE_RESEARCH.md](iOS_ANE_RESEARCH.md) | Complete reverse engineering log (14 steps), all findings with data |
+| [iOS_ANE_RESEARCH.md](iOS_ANE_RESEARCH.md) | Complete reverse engineering log (15 steps), all findings with data |
 | [ROADMAP_iOS.md](ROADMAP_iOS.md) | Phase 1-3 task status, what's done, what's open |
 
 ---
