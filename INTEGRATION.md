@@ -438,6 +438,111 @@ static NSString *gen_my_custom_kernel(void) {
 
 ---
 
+## Real-World Example: Meus (Thought Journal App)
+
+[Meus](https://github.com/slavko-at-klincov-it) is a thought journal app where users speak their thoughts throughout the day. ANE Training personalizes a language model to the user's thinking style — entirely on-device, no cloud.
+
+### Architecture
+
+```
+User speaks thought
+    ↓
+Speech-to-Text (iOS)
+    ↓
+trainer.addText(thought)     // tokenize + append to training data
+    ↓
+trainer.train(steps: 4)      // ~1 second, runs in background
+    ↓
+User puts phone down          // model is already slightly more personalized
+```
+
+### Integration Code
+
+```swift
+import ANEProbe
+
+class ThoughtRecorder {
+    let trainer = ANETrainer.shared
+
+    // Called after each thought is transcribed
+    func didRecordThought(_ text: String) {
+        // 1. Add to training data (tokenized + appended to .bin file)
+        trainer.addText(text)
+
+        // 2. Train immediately — 4 steps, ~1 second, user won't notice
+        trainer.train(steps: 4) { _ in }
+    }
+
+    // Called when app enters background
+    func appDidBackground() {
+        // Save checkpoint in case phone gets turned off
+        trainer.saveCheckpoint()
+
+        // If charging: bonus training on all today's data
+        if UIDevice.current.batteryState == .charging {
+            trainer.scheduleOvernight(hours: 4)
+        }
+    }
+
+    // Use the personalized model
+    func suggestCompletion(for prompt: String) -> String {
+        let docsDir = NSSearchPathForDirectoriesInDomains(
+            .documentDirectory, .userDomainMask, true).first!
+        let ckptPath = "\(docsDir)/ane_ckpt_0.bin"
+
+        guard let state = ane_inference_init(ckptPath, nil) else { return "" }
+        defer { ane_inference_free(state) }
+
+        guard let cStr = ane_generate(state, prompt, 50, 0.7) else { return "" }
+        defer { free(cStr) }
+        return String(cString: cStr)
+    }
+}
+```
+
+### Training Pattern: Micro-Training
+
+There is no difference between "micro-training" and "normal training" — each step is independent. The choice is purely about **when** to train:
+
+| Trigger | Steps | Time | Use Case |
+|:--|:-:|:-:|:--|
+| After each thought | 4 | ~1s | Immediate learning, works even if phone turns off later |
+| App goes to background | 20 | ~5s | Catch-up on recent thoughts |
+| Overnight while charging | 60,000+ | 8h | Deep training on all accumulated data |
+
+All three can coexist. The checkpoint system ensures seamless resume between sessions.
+
+### Why This Works
+
+- **Each thought** contains the user's vocabulary, sentence structure, and topics
+- **4 steps per thought** nudges the model toward the user's style
+- **After 30 days** of ~10 thoughts/day: ~1,200 training steps from personal data
+- **The model never sees a server** — everything stays on the iPhone's ANE
+- **No minimum session length** — even 1 step is meaningful
+
+### Typical Day
+
+```
+08:15  "I need to remember to call the dentist today"
+       → addText + 4 steps (1s)
+
+10:30  "The meeting with Sarah went well, we decided to..."
+       → addText + 4 steps (1s)
+
+12:45  "Had an idea about the new feature — what if we..."
+       → addText + 4 steps (1s)
+
+18:00  "Today was productive, I feel good about the progress"
+       → addText + 4 steps (1s)
+
+22:00  Phone plugged in, user sleeps
+       → Overnight: 4h training on all 4 thoughts + historical data
+```
+
+After weeks of this: the model understands how this specific person thinks, what topics they care about, and how they express themselves.
+
+---
+
 ## Troubleshooting
 
 | Problem | Cause | Fix |
