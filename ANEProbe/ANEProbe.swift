@@ -50,9 +50,48 @@ struct ANEProbeView: View {
         }
         .padding()
         .onAppear {
-            // Keep screen awake for training
             UIApplication.shared.isIdleTimerDisabled = true
-            runOvernightTraining()
+            runEndToEndTest()
+        }
+    }
+
+    func runEndToEndTest() {
+        Task.detached {
+            var lines: [String] = []
+            lines.append("=== END-TO-END TEST ===\n")
+
+            // 1. Tokenizer test
+            lines.append("--- 1. TOKENIZER ---")
+            if let result = ane_tokenizer_test() {
+                lines.append(result as String)
+            }
+
+            // 2. Quick training (20 steps)
+            lines.append("\n--- 2. TRAINING (20 steps) ---")
+            if let result = ane_training_engine_test() {
+                lines.append(result as String)
+            }
+
+            // 3. Inference test
+            lines.append("\n--- 3. INFERENCE ---")
+            if let result = ane_inference_test() {
+                lines.append(result as String)
+            }
+
+            lines.append("\n=== END-TO-END COMPLETE ===")
+
+            let result = lines.joined(separator: "\n")
+            for line in result.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            fputs("ANEPROBE: === DONE ===\n", stderr)
+            await MainActor.run {
+                self.output = result
+                self.isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
         }
     }
 
