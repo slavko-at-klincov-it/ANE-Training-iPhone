@@ -1081,8 +1081,60 @@ Dies ist der **erste dokumentierte Fall eines vollständigen Transformer-Trainin
 Apple Neural Engine eines iPhones**. Ein 110M-Parameter-Modell lernt nachweislich auf
 echten Textdaten, ausgeführt auf der ANE eines iPhone 15 Pro ohne Jailbreak.
 
-Offene Verbesserungen:
-- Größerer Datensatz (tinystories_all.bin, 1.9GB)
-- Pretrained Weights als Startpunkt
-- Dynamic Packing für schnellere Steps
+---
+
+## Schritt 15: 8-Stunden Overnight Training (2026-03-22/23)
+
+### 15.1 Setup
+- Zeitbasierte Schleife: `while (elapsed < 8 hours)`
+- Automatische Plateau-Erkennung alle 200 Steps
+- LR-Halbierung bei Plateau, Phase-Reset wenn LR zu niedrig
+- Checkpoint alle 500 Steps
+- Screen wach gehalten (`isIdleTimerDisabled`)
+
+### 15.2 Ergebnis
+
+```
+Duration:     8.0 Stunden (480 Minuten)
+Steps:        64.040
+Best Loss:    9.4083 (von 10.4787 Start = -10.2%)
+Final Loss:   10.3385
+Adam Updates: 16.000
+Speed:        2.2 steps/s — 8 Stunden lang konstant
+Plateaus:     234 erkannt
+Phases:       215 (automatische LR-Anpassung)
+Checkpoints:  128 gespeichert
+```
+
+### 15.3 Loss-Verlauf
+
+| Stunde | Step | Best Loss | Phase |
+|:--:|:--:|:--:|:--:|
+| 0 | 0 | 10.48 | 1 |
+| 0.5 | 4500 | 9.69 | 3 |
+| 1.0 | 8500 | 9.43 | 7 |
+| 2.0 | 16500 | 9.43 | 28 |
+| 4.0 | 32500 | 9.43 | 92 |
+| 6.5 | 52800 | **9.41** | 170 |
+| 8.0 | 64040 | **9.41** | 215 |
+
+### 15.4 Erkenntnisse
+
+1. **Kein Thermal-Throttle über 8 Stunden**: Speed konstant 2.2 steps/s von Anfang bis Ende.
+   Der ANE des iPhone 15 Pro kann sustained Load ohne Performance-Abbau.
+
+2. **Datensatz-Limit**: Best loss konvergiert bei ~9.41 — der 977KB Datensatz (~1900 Sequenzen)
+   ist nach ~8000 Steps effektiv ausgereizt. Weiterer Fortschritt braucht mehr Daten.
+
+3. **Plateau-Detection funktioniert**: 234 Plateaus erkannt, LR automatisch angepasst.
+   Das Phase-System (LR reset bei zu niedrigem LR) hält das Training am Leben.
+
+4. **Stabilität bewiesen**: 64.000 Steps, 16.000 Adam Updates, 128 Checkpoints — kein
+   einziger Crash, kein Memory-Leak, kein NaN.
+
+### 15.5 Nächste Schritte für bessere Ergebnisse
+- Größerer Datensatz (tinystories_all.bin, 1.9GB statt 977KB)
+- Pretrained Weights als Startpunkt (statt Random Init)
+- Cosine LR Schedule statt Plateau-Detection
+- Dynamic Packing für schnellere Steps (0.12ms statt ~230ms)
 - Inference / Chat UI

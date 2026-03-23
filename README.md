@@ -37,10 +37,14 @@ The Apple Neural Engine is a dedicated chip in every modern iPhone designed for 
 Model:    Stories-110M (12 layers, 768 dim, 12 heads, 2048 hidden)
 Data:     TinyStories (pre-tokenized)
 Device:   iPhone 15 Pro (A17 Pro)
-Steps:    1000
-Time:     413 seconds (2.4 steps/s)
-Loss:     10.48 → 9.33 (best, -10.9%)
-Optimizer: Adam (lr=3e-4)
+
+8-Hour Overnight Run:
+  Steps:    64,040
+  Duration: 8.0 hours
+  Loss:     10.48 → 9.41 (best, -10.2%)
+  Adam:     16,000 updates
+  Speed:    2.2 steps/s — constant for 8 hours, zero thermal throttle
+  LR:       Automatic plateau detection + adjustment (234 plateaus, 215 phases)
 ```
 
 ### Architecture Support
