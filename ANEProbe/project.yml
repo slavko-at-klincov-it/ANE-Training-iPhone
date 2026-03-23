@@ -45,6 +45,11 @@ targets:
       - ANEStoriesCPUOps.h
       - ANETrainingEngine.m
       - ANETrainingEngine.h
+      - ANETokenizer.m
+      - ANETokenizer.h
+      - ANEInference.m
+      - ANEInference.h
+      - ANETrainer.swift
       - ANEBackgroundTraining.swift
       - ANEThermalMonitor.swift
       - TrainingDashboardView.swift
@@ -52,6 +57,8 @@ targets:
         type: folder
         buildPhase: resources
       - path: tinystories_data00.bin
+        buildPhase: resources
+      - path: tokenizer.bin
         buildPhase: resources
     info:
       path: Info.plist
