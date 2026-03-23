@@ -6,12 +6,16 @@ Training eines 110M-Parameter Transformers direkt auf dem Apple Neural Engine (A
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     SwiftUI App Layer                        │
-│  ANEProbe.swift · TrainingDashboardView · BackgroundTraining │
+│                    Public API (Swift)                         │
+│  ANETrainer.swift — addText · train · scheduleOvernight      │
+│  ANETokenizer — text ↔ tokens · ANEInference — generate      │
 ├─────────────────────────────────────────────────────────────┤
-│                   Training Engine (ObjC)                     │
-│              ANETrainingEngine.m (878 Zeilen)                │
-│   Forward → Loss → Backward → Adam → Recompile → Repeat     │
+│                     SwiftUI App Layer                         │
+│  ANEProbe.swift · TrainingDashboardView · BackgroundTraining  │
+├─────────────────────────────────────────────────────────────┤
+│                   Training Engine (ObjC)                      │
+│              ANETrainingEngine.m (1191 Zeilen)                │
+│   Forward → Loss → Backward → Adam → Recompile → Repeat      │
 ├──────────────────┬──────────────────┬───────────────────────┤
 │  MIL Generators  │    CPU Ops       │   Infrastructure      │
 │  ANEStoriesMIL.h │ ANEStoriesCPUOps │ Checkpoint · Thermal  │
@@ -21,11 +25,11 @@ Training eines 110M-Parameter Transformers direkt auf dem Apple Neural Engine (A
 │              ANETrainingConfig.h (392 Zeilen)                 │
 │  compile_kern · ane_eval · io_read/write · IOSurface I/O     │
 ├─────────────────────────────────────────────────────────────┤
-│           Apple Private API (AppleNeuralEngine.framework)    │
+│           Apple Private API (AppleNeuralEngine.framework)     │
 │  _ANEInMemoryModel · _ANEClient · _ANERequest · _ANEIOSurface│
 ├─────────────────────────────────────────────────────────────┤
-│                    A17 Pro ANE Hardware                       │
-│              16 Cores · h16 Architektur · ~32MB SRAM          │
+│                    A17 Pro ANE Hardware                        │
+│              16 Cores · h16 Architektur · ~32MB SRAM           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -202,7 +206,15 @@ struct ANETrainState {
 - Alle `ACCUM_STEPS=4` Steps: Gradients mitteln, Adam Update, alle 60 Kernel neu kompilieren (~5s)
 - Kein `exec()` wie auf macOS — stattdessen `free_kern` + `compile_kern` Recycling
 
-### Schicht 5: Infrastruktur
+### Schicht 5: Public API
+
+| Datei | Zeilen | Funktion |
+|:--|:-:|:--|
+| **ANETrainer.swift** | ~350 | High-Level Swift API. `addText()` tokenisiert + speichert, `train()` startet Training, `scheduleOvernight()` registriert BGProcessingTask. ObservableObject für SwiftUI. |
+| **ANETokenizer.m/.h** | ~350 | BPE Tokenizer (llama2.c Format, 32K Vocab). `ane_tokenize()` Text→Tokens, `ane_detokenize()` Tokens→Text. FNV-1a Hash für O(1) Lookup. |
+| **ANEInference.m/.h** | ~570 | Text-Generierung. 24 ANE-Kernel (Forward-only, kein Backward). Autoregressive Generation mit Temperature Sampling. Lädt BLZT Checkpoint oder llama2.c Weights. |
+
+### Schicht 6: Infrastruktur
 
 | Datei | Zeilen | Funktion |
 |:--|:-:|:--|
@@ -211,7 +223,7 @@ struct ANETrainState {
 | **ANEThermal.m/.h** | 320 | Thermal-State Monitoring (`ProcessInfo.thermalState`), ANE Throughput Monitor (Rolling Average), Adaptive Training Controller (Delay/Pause bei Throttle). |
 | **ANEDynamicTrain.m/.h** | 530 | Dynamic Spatial Packing — Weights im IOSurface statt baked in MIL. 0.119ms/iter statt 22.5ms mit Recompile. Per-Channel Scale funktioniert, Full Matrix Matmul scheitert am ANE-Compiler. |
 
-### Schicht 6: Swift UI / App Layer
+### Schicht 7: Swift UI / App Layer
 
 | Datei | Zeilen | Funktion |
 |:--|:-:|:--|
@@ -220,7 +232,7 @@ struct ANETrainState {
 | **ANEThermalMonitor.swift** | 90 | SwiftUI-Observable Thermal Monitor. Maps `thermalState` → `TrainingPolicy`. |
 | **TrainingDashboardView.swift** | 100 | SwiftUI Dashboard: Status, Loss, Steps, Thermal, Start/Stop. |
 
-### Schicht 7: Forschung / Tests (nicht produktiv)
+### Schicht 8: Forschung / Tests (nicht produktiv)
 
 | Datei | Funktion |
 |:--|:--|

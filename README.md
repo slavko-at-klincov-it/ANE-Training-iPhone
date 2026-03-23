@@ -62,6 +62,28 @@ Any transformer with these building blocks works on ANE:
 
 ---
 
+## Integration — 5 Lines to Train on ANE
+
+```swift
+let trainer = ANETrainer.shared
+
+// Collect data during the day
+trainer.addText("User wrote this today...")
+
+// Train overnight (auto-schedules BGProcessingTask)
+trainer.scheduleOvernight(hours: 8)
+
+// Next morning: generate text with trained model
+let state = ane_inference_init(checkpointPath, nil)
+let text = String(cString: ane_generate(state, "Once upon a time", 100, 0.8))
+```
+
+`ANETrainer` is an `ObservableObject` — bind `status`, `currentStep`, `bestLoss` directly to SwiftUI.
+
+See [INTEGRATION.md](INTEGRATION.md) for the full API reference, code examples, and data format.
+
+---
+
 ## What You Need
 
 ### Hardware
@@ -224,6 +246,11 @@ For detailed benchmarks, hardware specs, and memory layout see [ARCHITECTURE.md]
 
 ```
 ANEProbe/
+├── Public API
+│   ├── ANETrainer.swift             # High-level Swift API: addText, train, scheduleOvernight
+│   ├── ANETokenizer.h/.m            # BPE tokenizer (32K vocab, llama2.c compatible)
+│   └── ANEInference.h/.m            # Text generation with trained model
+│
 ├── Core Infrastructure
 │   ├── ANETrainingConfig.h          # ANE runtime, IOSurface I/O, structs, compile/eval
 │   ├── ANEStoriesMIL.h              # 7 MIL kernel generators (attention, FFN, backward)
@@ -264,6 +291,7 @@ ANEProbe/
 │
 └── Data
     ├── tinystories_data00.bin       # Pre-tokenized TinyStories (977KB, ~488K tokens)
+    ├── tokenizer.bin                # BPE tokenizer vocabulary (424KB, 32K tokens)
     └── IdentityConv.mlmodelc/       # CoreML identity conv test model
 ```
 

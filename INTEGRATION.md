@@ -6,19 +6,137 @@ How to integrate ANE training capabilities into your own iOS app.
 
 ## Overview
 
-This project provides a C API for training transformers on the Apple Neural Engine. You can integrate it as a static library, or copy the source files directly into your project.
+Two integration levels:
+
+**Level 1 — Swift API (recommended):** Use `ANETrainer` for a 5-line integration.
+**Level 2 — C API:** Full control over the training loop.
 
 ```
 Your App
    │
    ▼
-ANETrainingEngine.h  ←── Public C API (init, step, save, free)
+ANETrainer.swift     ←── High-level Swift API (addText, train, scheduleOvernight)
    │
-   ├── ANETrainingConfig.h     (ANE runtime + IOSurface I/O)
-   ├── ANEStoriesMIL.h         (MIL kernel generators)
-   ├── ANEStoriesCPUOps.h      (CPU ops: RMSNorm, Adam, loss)
-   ├── ANEDataPipeline.h       (token loading + batch prep)
-   └── ANECheckpoint.h         (save/load training state)
+   ├── ANETokenizer.h/.m      (BPE tokenizer: text → token IDs)
+   ├── ANETrainingEngine.h/.m  (C training loop: init, step, save, free)
+   ├── ANEInference.h/.m       (text generation with trained model)
+   ├── ANECheckpoint.h/.m      (save/load training state)
+   │
+   └── Internal:
+       ├── ANETrainingConfig.h (ANE runtime + IOSurface I/O)
+       ├── ANEStoriesMIL.h     (MIL kernel generators)
+       ├── ANEStoriesCPUOps.h  (CPU ops: RMSNorm, Adam, loss)
+       └── ANEDataPipeline.h   (token loading + batch prep)
+```
+
+---
+
+## Quick Integration (Swift API)
+
+```swift
+import UIKit
+
+class MyViewController: UIViewController {
+    let trainer = ANETrainer.shared
+
+    // During the day: collect training data
+    func userDidWriteText(_ text: String) {
+        trainer.addText(text)
+    }
+
+    // When user goes to sleep / app backgrounds
+    func scheduleTraining() {
+        trainer.scheduleOvernight(hours: 8)
+    }
+
+    // Next morning: generate text
+    func generateResponse(prompt: String) -> String {
+        let docsDir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        let ckptPath = "\(docsDir)/ane_ckpt_0.bin"
+
+        guard let state = ane_inference_init(ckptPath, nil) else { return "No model" }
+        defer { ane_inference_free(state) }
+
+        guard let cStr = ane_generate(state, prompt, 100, 0.8) else { return "Generation failed" }
+        defer { free(cStr) }
+        return String(cString: cStr)
+    }
+
+    // SwiftUI: bind to trainer's published properties
+    // trainer.status, trainer.currentStep, trainer.bestLoss, trainer.stepsPerSecond
+}
+```
+
+### ANETrainer API Reference
+
+```swift
+// Singleton
+let trainer = ANETrainer.shared
+
+// Data collection
+trainer.addText("raw text")           // tokenize + append to training file
+trainer.addTokens([42, 100, 2048])    // append pre-tokenized IDs
+trainer.collectedTokenCount            // how many tokens collected
+
+// Training
+trainer.train(steps: 1000) { result in ... }   // step-based
+trainer.train(hours: 8.0) { result in ... }     // time-based
+trainer.scheduleOvernight(hours: 8)              // BGProcessingTask
+trainer.stop()                                    // graceful stop + checkpoint
+
+// State (ObservableObject — bind to SwiftUI)
+trainer.status          // .idle, .training, .completed, .error
+trainer.currentStep     // Int
+trainer.bestLoss        // Float
+trainer.currentLoss     // Float
+trainer.stepsPerSecond  // Double
+
+// Checkpoint
+trainer.saveCheckpoint()
+trainer.loadCheckpoint() -> Bool
+trainer.hasCheckpoint    // Bool
+
+// Result (returned in completion handler)
+result.steps            // total steps trained
+result.duration         // TimeInterval
+result.bestLoss         // Float
+result.finalLoss        // Float
+result.adamUpdates      // Int
+```
+
+### Tokenizer API
+
+```c
+// Load tokenizer (from app bundle)
+ANETokenizer *tok = ane_tokenizer_load_from_bundle();
+
+// Encode
+int len;
+uint16_t *tokens = ane_tokenize(tok, "Hello world", &len);
+// tokens = [15043, 3186], len = 2
+
+// Decode
+char *text = ane_detokenize(tok, tokens, len);
+// text = "Hello world"
+
+free(tokens);
+free(text);
+ane_tokenizer_free(tok);
+```
+
+### Inference API
+
+```c
+// Init (from checkpoint or pretrained weights)
+ANEInferenceState *state = ane_inference_init("/path/to/checkpoint.bin", NULL);
+
+// Generate
+char *output = ane_generate(state, "Once upon a time", 100, 0.8);
+printf("%s\n", output);
+free(output);
+
+// Cleanup
+ane_inference_free(state);
 ```
 
 ---
@@ -29,30 +147,35 @@ ANETrainingEngine.h  ←── Public C API (init, step, save, free)
 
 Copy these files into your Xcode project:
 
-**Minimum for training (6 files):**
+**Full integration with Swift API (recommended, 14 files + 2 data):**
 ```
-ANETrainingConfig.h      # ANE runtime layer
-ANEStoriesMIL.h          # MIL kernel generators
-ANEStoriesCPUOps.h       # CPU operations
-ANETrainingEngine.h      # Public API header
-ANETrainingEngine.m      # Training engine implementation
-ANEDataPipeline.h/.m     # Data loading + loss
-```
-
-**For checkpoint support (+2 files):**
-```
-ANECheckpoint.h/.m       # Save/load training state
-```
-
-**For thermal management (+2 files):**
-```
-ANEThermal.h/.m          # Thermal monitoring + adaptive control
+ANETrainer.swift               # High-level Swift API
+ANETokenizer.h/.m              # BPE tokenizer
+ANEInference.h/.m              # Text generation
+ANETrainingEngine.h/.m         # Training loop
+ANETrainingConfig.h            # ANE runtime layer
+ANEStoriesMIL.h                # MIL kernel generators
+ANEStoriesCPUOps.h             # CPU operations
+ANEDataPipeline.h/.m           # Data loading + loss
+ANECheckpoint.h/.m             # Checkpoint save/load
+tokenizer.bin                  # BPE vocabulary (bundle resource)
+tinystories_data00.bin         # Training data (bundle resource, optional)
 ```
 
-**For background training (+2 Swift files):**
+**For thermal management (optional, +4 files):**
 ```
-ANEBackgroundTraining.swift    # BGProcessingTask
+ANEThermal.h/.m                # Thermal monitoring + adaptive control
+ANEBackgroundTraining.swift    # BGProcessingTask scheduling
 ANEThermalMonitor.swift        # SwiftUI thermal observer
+```
+
+**Minimum C-only integration (7 files, no Swift):**
+```
+ANETrainingConfig.h            # ANE runtime
+ANEStoriesMIL.h                # MIL generators
+ANEStoriesCPUOps.h             # CPU ops
+ANETrainingEngine.h/.m         # Training loop
+ANEDataPipeline.h/.m           # Data loading
 ```
 
 ### Build Settings

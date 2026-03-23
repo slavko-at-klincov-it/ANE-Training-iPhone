@@ -171,27 +171,52 @@
 - [x] Full Weight Matrix: Compile Fail (matmul im Dynamic Context)
 - [ ] In Training Engine integrieren (Per-Channel Ansatz für RMSNorm Weights)
 
-### 3.6 Inference Server
-- [ ] Trainiertes Modell für Inference laden
+### 3.6 Tokenizer ✅ DONE (2026-03-23)
+- [x] BPE Tokenizer (llama2.c Format, 32K Vocab)
+- [x] ane_tokenize(): Text → Token IDs
+- [x] ane_detokenize(): Token IDs → Text
+- [x] FNV-1a Hash für O(1) Vocab-Lookup
+- [x] tokenizer.bin im App Bundle (424KB)
+
+### 3.7 High-Level Swift API ✅ DONE (2026-03-23)
+- [x] ANETrainer.swift — ObservableObject für SwiftUI
+- [x] addText() — tokenisiert + speichert Trainingsdaten
+- [x] train(steps:) / train(hours:) — Foreground Training
+- [x] scheduleOvernight() — BGProcessingTask
+- [x] Checkpoint Management (save/load/hasCheckpoint)
+- [x] ANETrainer.shared Singleton
+
+### 3.8 Inference Engine ✅ DONE (2026-03-23)
+- [x] ane_inference_init() — Weights laden, 24 ANE-Kernel kompilieren
+- [x] ane_generate() — Autoregressive Text-Generierung mit Temperature Sampling
+- [x] Unterstützt: BLZT Checkpoint, llama2.c Pretrained, Random Init
 - [ ] Chat-Interface in der App
 - [ ] Token-Streaming
+- [ ] KV-Cache für schnellere Generierung
 
-### 3.7 App Store Variante (optional)
-- [ ] CoreML-Wrapper statt Private API
-- [ ] Alle privaten API-Aufrufe hinter Feature-Flag
-- [ ] App Review Guidelines einhalten
-
-### 3.8 Training Dashboard ✅ CODE DONE (2026-03-21)
+### 3.9 Training Dashboard ✅ CODE DONE (2026-03-21)
 - [x] TrainingDashboardView (SwiftUI)
 - [x] Status, Loss, Steps, Thermal Anzeige
 - [x] Start/Pause/Stop Buttons
 - [ ] Grafische Loss-Kurve
 
+### 3.10 8-Stunden Overnight Training ✅ PROVEN (2026-03-23)
+- [x] 64.040 Steps in 8 Stunden
+- [x] Loss 10.48 → 9.41 (best)
+- [x] 2.2 steps/s konstant — kein Thermal-Throttle
+- [x] Automatische Plateau-Detection + LR-Anpassung
+
+### 3.11 App Store Variante (optional)
+- [ ] CoreML-Wrapper statt Private API
+- [ ] Alle privaten API-Aufrufe hinter Feature-Flag
+- [ ] App Review Guidelines einhalten
+
 ---
 
 ## Aktueller Status
 
-**Phase 1 + 1.5 + 2 + 3 (größtenteils) KOMPLETT.**
-**12-Layer Stories-110M Training auf iPhone ANE bewiesen — Loss sinkt, 72 Kernel, Adam Optimizer.**
-**Infrastruktur steht: Checkpoint, Thermal, Background Training, Data Pipeline, Dashboard.**
-**Offen: Echte Trainingsdaten, Inference UI, App Store Variante.**
+**ALLE KERNKOMPONENTEN FERTIG.**
+**12-Layer Stories-110M Training + Inference auf iPhone ANE bewiesen.**
+**8h Overnight Training: 64K Steps, best loss 9.41, kein Throttle.**
+**Public API: ANETrainer (Swift), Tokenizer, Inference — bereit für Integration.**
+**Offen: Chat UI, KV-Cache, App Store Variante, größerer Datensatz.**
