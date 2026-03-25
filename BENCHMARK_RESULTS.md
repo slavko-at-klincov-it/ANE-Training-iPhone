@@ -404,6 +404,21 @@ Recherche vom 25. Maerz 2026 zum Vergleich unserer Ergebnisse mit dem aktuellen 
 - GitHub: hollance/neural-engine (Supported Devices) — https://github.com/hollance/neural-engine/blob/master/docs/supported-devices.md
 - Wikipedia: Apple A17 — https://en.wikipedia.org/wiki/Apple_A17
 
+### Apple API Historie (ergaenzt 25. Maerz 2026)
+
+| API | Status | Relevanz |
+|-----|--------|----------|
+| `MLCDevice.ane()` (MLCompute) | **Deprecated** | War die einzige oeffentliche ANE-Training API |
+| `MLCTrainingGraph` (MLCompute) | **Deprecated** | Training Graph mit ANE-Support — genau was wir brauchen |
+| `com.apple.developer.coreml.neural-engine-access` | Aktiv | Entitlement fuer CoreML ANE-Inference (nicht Training) |
+| `MLNeuralEngineComputeDevice` | Aktiv | Info-Objekt, kein direkter ANE-Zugang |
+| `MLUpdateTask` (CoreML) | Aktiv | Nur letzte Layer (FC/Conv), kein Transformer-Training |
+| `MPSGraph` + `scaledDotProductAttention` | Aktiv | GPU-Training mit Autograd, aber kein ANE-Target |
+| `MLX Swift` | Aktiv | Training auf Apple Silicon (GPU), kein ANE auf iOS |
+| `Core AI` (iOS 27) | Angekuendigt | Ersetzt CoreML, ANE-Training-Support unbekannt |
+
+**Fazit:** Apple hatte mit MLCompute eine oeffentliche ANE-Training API, hat sie deprecated, und bietet keinen Ersatz. Unser Projekt schliesst diese Luecke. Core AI (WWDC Juni 2026) koennte das aendern.
+
 ---
 
 ## 11. Modellgroesse & Geraete-Kompatibilitaet

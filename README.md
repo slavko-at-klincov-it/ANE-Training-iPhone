@@ -323,11 +323,38 @@ Full details: [iOS_ANE_RESEARCH.md](iOS_ANE_RESEARCH.md) (14 research steps docu
 
 ---
 
+## Why Private APIs? Apple's ANE Training History
+
+Apple once provided **public APIs for ANE training** — then removed them without replacement:
+
+| Year | Framework | ANE Training Support | Status |
+|:--|:--|:--|:--|
+| 2020 | **MLCompute** | `MLCDevice.ane()` + `MLCTrainingGraph` — full ANE training | **Deprecated** (no replacement) |
+| 2019+ | **CoreML** | `MLUpdateTask` — only last FC/Conv layers, no transformer support | Active but limited |
+| 2024 | **MPSGraph** | GPU training with auto-diff, no ANE target | Active (GPU only) |
+| 2025 | **MLX** | Training on Apple Silicon (GPU), no ANE target on iOS | Active (Mac-focused) |
+| 2026 | **Core AI** (iOS 27) | Unknown — may restore ANE training access | Announced, not released |
+
+**The gap:** Apple deprecated `MLCompute` (the only public ANE training API) without providing an alternative. CoreML's on-device training is limited to fine-tuning last layers and cannot backpropagate through full transformers. This project fills that gap by accessing the ANE directly via private APIs.
+
+**Relevant Apple documentation:**
+- [`MLCDevice.ane()`](https://developer.apple.com/documentation/mlcompute/mlcdevice/ane()) — deprecated public ANE device selector
+- [`MLCTrainingGraph`](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/) — deprecated training graph with ANE support
+- [`com.apple.developer.coreml.neural-engine-access`](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.coreml.neural-engine-access) — entitlement for CoreML ANE access (inference only)
+- [`MLNeuralEngineComputeDevice`](https://developer.apple.com/documentation/coreml/mlneuralenginecomputedevice) — read-only ANE device info
+- [`Personalizing a Model with On-Device Updates`](https://developer.apple.com/documentation/coreml/personalizing-a-model-with-on-device-updates) — CoreML fine-tuning (last layers only)
+
+**Legal basis:** Reverse engineering for interoperability under [DMCA §1201(f)](https://www.law.cornell.edu/uscode/text/17/1201) and fair use doctrine ([Sega v. Accolade, 1992](https://en.wikipedia.org/wiki/Sega_v._Accolade)). No Apple proprietary code is included in this repository.
+
+---
+
 ## Related Projects
 
 - [ANE-Training (macOS)](https://github.com/slavko-at-klincov-it/ANE-Training) — The macOS counterpart with full Stories-110M training
-- [maderix/ANE](https://github.com/maderix/ANE) — Original ANE reverse engineering
+- [maderix/ANE](https://github.com/maderix/ANE) — ANE reverse engineering on M4 Mac
+- [ANEMLL](https://github.com/Anemll/Anemll) — ANE inference for LLMs via CoreML (no training, public APIs)
 - [Orion Paper](https://arxiv.org/html/2603.06728v1) — Academic paper on ANE programming
+- [Metal FlashAttention](https://github.com/philipturner/metal-flash-attention) — GPU attention with backward pass (used by Draw Things)
 - [llama2.c](https://github.com/karpathy/llama2.c) — The model format and tokenizer we use
 
 ---
@@ -335,22 +362,28 @@ Full details: [iOS_ANE_RESEARCH.md](iOS_ANE_RESEARCH.md) (14 research steps docu
 ## FAQ
 
 **Q: Will this get my app rejected from the App Store?**
-A: Yes — it uses private APIs. For App Store distribution, you'd need to wrap everything in CoreML. The private API approach works for TestFlight, Ad-Hoc, and enterprise distribution.
+A: Yes — it uses private APIs. Apple's automated review detects private API usage and rejects the app. Distribution works via GitHub (source code), TestFlight, Ad-Hoc signing, or enterprise distribution. For App Store, the training backend would need to be rewritten using MLX or the upcoming Core AI framework (iOS 27).
+
+**Q: Isn't there a public API for ANE training?**
+A: There was — Apple's MLCompute framework had `MLCDevice.ane()` with full training graph support. Apple deprecated the entire framework without providing an alternative. CoreML's on-device training only supports fine-tuning the last fully-connected or convolution layers, which is insufficient for transformer training. Our project fills this gap.
+
+**Q: What about Core AI (iOS 27)?**
+A: Apple is replacing CoreML with a new "Core AI" framework at WWDC 2026 (June). It may restore public ANE training access — but this is unconfirmed. If it does, this project can be ported to use public APIs.
 
 **Q: Does this work on older iPhones?**
-A: Untested, but likely works on any iPhone with an ANE (A11 Bionic / iPhone 8 and later). Performance will vary. The A17 Pro has the most capable ANE (h16 architecture).
+A: Untested, but likely works on any iPhone with an ANE (A11 Bionic / iPhone 8 and later). Performance will vary. The A17 Pro has the most capable ANE (h16 architecture, 35 TOPS).
 
 **Q: Can I train GPT-4 sized models?**
-A: No. iPhone RAM limits practical model size to ~110M parameters with Adam, or ~200M with SGD. This is for small personalized models, not foundation models.
+A: No. iPhone RAM limits practical model size to ~150M parameters (6 GB devices) or ~250M (8 GB Pro devices) with Adam optimizer. This is for small personalized models, not foundation models. For larger models, consider LoRA/QLoRA fine-tuning.
 
 **Q: How does this compare to CoreML training?**
-A: CoreML supports on-device training for specific layer types but with significant limitations. This project bypasses CoreML entirely and talks directly to the ANE hardware, enabling full transformer training with any MIL-expressible architecture.
+A: CoreML's `MLUpdateTask` supports on-device training but only for the last fully-connected and convolution layers. It cannot backpropagate through attention, normalization, or activation layers. This project enables full transformer training through all 12 layers with complete backpropagation on ANE.
 
 **Q: Is the ANE really faster than the GPU for training?**
-A: For the specific operations in transformer training (conv, matmul, softmax, elementwise), the ANE is significantly faster than the iPhone GPU and dramatically faster than the CPU. The ANE is purpose-built for these operations.
+A: Yes and no. ANE computes individual steps 2.3x faster than GPU (200ms vs 462ms per step). But ANE requires kernel recompilation after weight updates (42% overhead). GPU training has no recompilation but slower per-step compute. Net result: ANE is 50% faster overall (3.25 vs 2.17 steps/s). For power efficiency, ANE inference uses 2.51W vs CPU's 8.65W (3.4x more efficient).
 
 **Q: Can I use my own model architecture?**
-A: Yes, if it can be expressed in MIL operations that the ANE supports (see Op Coverage table). You'd need to write custom MIL generators. The existing generators cover the standard transformer architecture (RMSNorm + Multi-Head Attention + SwiGLU FFN).
+A: Yes, if it can be expressed in MIL operations that the ANE supports. You'd need to write custom MIL generators. The existing generators cover the standard transformer architecture (RMSNorm + Multi-Head Attention + SwiGLU FFN).
 
 ---
 
