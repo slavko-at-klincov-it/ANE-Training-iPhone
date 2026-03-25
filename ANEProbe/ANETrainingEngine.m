@@ -351,7 +351,7 @@ static void random_init_weights(LayerWeights *lw, float *rms_final, float *embed
 static bool compile_all_kernels(ANETrainState *s) {
     s->compiling = true;
 
-    // Free existing weight-bearing kernels
+    // Free existing weight-bearing kernels ONLY (not sdpaBwd2 — it's weight-free)
     for (int L = 0; L < NLAYERS; L++) free_layer_kernels(&s->kern[L]);
 
     // Compile weight-bearing kernels for all layers
@@ -363,7 +363,8 @@ static bool compile_all_kernels(ANETrainState *s) {
         }
     }
 
-    // Re-compile sdpaBwd2 if needed (weight-free, one per layer)
+    // sdpaBwd2 is weight-free — compile once at init, never recompile.
+    // This saves ~240ms per accumulation cycle (12 kernels × 20ms each).
     for (int L = 0; L < NLAYERS; L++) {
         if (!s->sdpaBwd2[L]) {
             s->sdpaBwd2[L] = compile_sdpa_bwd2_kern(&s->compile_count);
@@ -373,6 +374,7 @@ static bool compile_all_kernels(ANETrainState *s) {
                 return false;
             }
         }
+        // else: already compiled, skip (weight-free kernel unchanged)
     }
 
     s->kernels_compiled = true;
@@ -384,12 +386,12 @@ static bool compile_all_kernels(ANETrainState *s) {
 static bool check_and_reset_compile_budget(ANETrainState *s) {
     if (s->compile_count + TOTAL_WEIGHT_KERNELS + NLAYERS <= IOS_MAX_COMPILES) return true;
 
-    // Budget exhausted: free all kernels, reset counter, recompile
+    // Budget exhausted: free weight-bearing kernels only, reset counter, recompile
+    // Keep sdpaBwd2 (weight-free) — no need to recompile
     fprintf(stderr, "[engine] Compile budget reached (%d), resetting...\n", s->compile_count);
     for (int L = 0; L < NLAYERS; L++) {
         free_layer_kernels(&s->kern[L]);
-        free_kern(s->sdpaBwd2[L]);
-        s->sdpaBwd2[L] = NULL;
+        // sdpaBwd2 kept alive (weight-free, never needs recompile)
     }
     s->compile_count = 0;
     s->kernels_compiled = false;
@@ -472,7 +474,7 @@ ANETrainState *ane_train_init(const char *model_path, const char *data_path) {
     }
 
     // Concurrency
-    s->dw_q = dispatch_queue_create("ane.train.dw_cblas", DISPATCH_QUEUE_SERIAL);
+    s->dw_q = dispatch_queue_create("ane.train.dw_cblas", DISPATCH_QUEUE_CONCURRENT);
     s->dw_grp = dispatch_group_create();
 
     // Compile initial kernels

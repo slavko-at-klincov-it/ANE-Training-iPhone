@@ -15,27 +15,73 @@ struct ANEProbeApp: App {
 }
 
 struct ANEProbeView: View {
-    @State private var output = "Starting overnight training..."
-    @State private var isRunning = true
+    @State private var output = "Ready. Tap a button to start."
+    @State private var isRunning = false
 
     var body: some View {
         VStack(spacing: 16) {
             Text("ANE Training").font(.title.bold())
 
-            HStack {
-                Button("Overnight Train (8 hours)") {
+            VStack(spacing: 8) {
+                HStack {
+                    Button("Overnight 8h") {
+                        isRunning = true
+                        runOvernightTraining()
+                    }
+                    .disabled(isRunning)
+                    .buttonStyle(.borderedProminent)
+
+                    Button("Quick Probe") {
+                        isRunning = true
+                        runProbe()
+                    }
+                    .disabled(isRunning)
+                    .buttonStyle(.bordered)
+                }
+
+                HStack {
+                    Button("Train Bench 30m") {
+                        isRunning = true
+                        runBenchmark(minutes: 30)
+                    }
+                    .disabled(isRunning)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.orange)
+
+                    Button("Inference ANE/GPU/CPU") {
+                        isRunning = true
+                        runInferenceBenchmark()
+                    }
+                    .disabled(isRunning)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.green)
+                }
+
+                HStack {
+                    Button("ULTIMATE 20m") {
+                        isRunning = true
+                        runUltimateBenchmark()
+                    }
+                    .disabled(isRunning)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.purple)
+                }
+
+                Button("TRAIN 5m") {
                     isRunning = true
-                    runOvernightTraining()
+                    runTrainingBenchmark()
                 }
                 .disabled(isRunning)
                 .buttonStyle(.borderedProminent)
+                .tint(.red)
 
-                Button("Quick Probe") {
+                Button("ANE Power 15m") {
                     isRunning = true
-                    runProbe()
+                    runANEPowerTest()
                 }
                 .disabled(isRunning)
                 .buttonStyle(.bordered)
+                .tint(.blue)
             }
 
             ScrollView {
@@ -51,7 +97,6 @@ struct ANEProbeView: View {
         .padding()
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
-            runEndToEndTest()
         }
     }
 
@@ -105,6 +150,173 @@ struct ANEProbeView: View {
                 logger.notice("\(s, privacy: .public)")
                 fputs("ANEPROBE: \(s)\n", stderr)
             }
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runGPUAutoSequence() {
+        Task.detached {
+            var allResults = ""
+
+            // Step 1: GPU training smoke test (20 steps)
+            fputs("AUTO: === GPU TRAINING TEST ===\n", stderr)
+            if let r = gpu_training_test() as String? {
+                allResults += r + "\n\n"
+            }
+            await MainActor.run { self.output = allResults }
+
+            // Step 2: GPU training benchmark (5 min)
+            fputs("AUTO: === GPU TRAINING BENCHMARK (5 min) ===\n", stderr)
+            if let r = gpu_training_benchmark(5.0) as String? {
+                allResults += r + "\n\n"
+            }
+            await MainActor.run { self.output = allResults }
+
+            // Step 3: ANE training benchmark (5 min) for comparison
+            fputs("AUTO: === ANE TRAINING BENCHMARK (5 min) ===\n", stderr)
+            if let r = ane_training_only_benchmark(5.0) as String? {
+                allResults += r
+            }
+            await MainActor.run { self.output = allResults }
+
+            fputs("AUTO: === ALL COMPLETE ===\n", stderr)
+            await MainActor.run {
+                self.output = allResults
+                self.isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runAutoSequence() {
+        Task.detached {
+            var allResults = ""
+
+            // Step 1: Training benchmark (5 min)
+            fputs("ANEPROBE: === AUTO: STARTING TRAINING BENCHMARK ===\n", stderr)
+            if let r = ane_training_only_benchmark(5.0) as String? {
+                allResults += r + "\n\n"
+            }
+            await MainActor.run { self.output = allResults }
+
+            // Step 2: ANE Power test (15 min)
+            fputs("ANEPROBE: === AUTO: STARTING ANE POWER TEST ===\n", stderr)
+            if let r = ane_power_test(15.0) as String? {
+                allResults += r
+            }
+            await MainActor.run { self.output = allResults }
+
+            fputs("ANEPROBE: === AUTO: ALL BENCHMARKS COMPLETE ===\n", stderr)
+            await MainActor.run {
+                self.output = allResults
+                self.isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runANEPowerTest() {
+        Task.detached {
+            let result = ane_power_test(15.0)
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runTrainingBenchmark() {
+        Task.detached {
+            let result = ane_training_only_benchmark(5.0)
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runUltimateBenchmark() {
+        Task.detached {
+            let result = ane_ultimate_benchmark(20)  // 20 min full run
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            fputs("ANEPROBE: === ULTIMATE BENCHMARK DONE ===\n", stderr)
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runPowerBenchmark() {
+        Task.detached {
+            let result = ane_power_benchmark(5.0)  // 5 min per backend
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            fputs("ANEPROBE: === POWER BENCHMARK DONE ===\n", stderr)
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runInferenceBenchmark() {
+        Task.detached {
+            let result = ane_inference_benchmark(50)
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            fputs("ANEPROBE: === INFERENCE BENCHMARK DONE ===\n", stderr)
+            await MainActor.run {
+                output = resultStr
+                isRunning = false
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+    }
+
+    func runBenchmark(minutes: Float) {
+        Task.detached {
+            let result = ane_benchmark_run(minutes)
+            let resultStr = result as String? ?? "nil"
+            for line in resultStr.split(separator: "\n", omittingEmptySubsequences: false) {
+                let s = String(line)
+                logger.notice("\(s, privacy: .public)")
+                fputs("ANEPROBE: \(s)\n", stderr)
+            }
+            fputs("ANEPROBE: === BENCHMARK DONE ===\n", stderr)
             await MainActor.run {
                 output = resultStr
                 isRunning = false

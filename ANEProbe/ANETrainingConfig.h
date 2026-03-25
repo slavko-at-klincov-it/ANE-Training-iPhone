@@ -18,9 +18,9 @@
 #define SEQ 256
 #define NLAYERS 12
 #define VOCAB 32000
-#define ACCUM_STEPS 4
+#define ACCUM_STEPS 8       // was 4 — halves recompilation frequency
 #define SCORE_CH (HEADS*SEQ)
-#define MAX_COMPILES 200
+#define MAX_COMPILES 500    // was 200 — prevents budget exhaustion in long runs
 
 // Weight sizes per layer
 #define WQ_SZ (DIM*DIM)

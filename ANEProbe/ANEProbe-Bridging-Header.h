@@ -16,3 +16,7 @@
 #import "ANETrainingEngine.h"
 #import "ANETokenizer.h"
 #import "ANEInference.h"
+#import "ANEBenchmark.h"
+#import "ANEInferenceBenchmark.h"
+#import "ANEUltimateBenchmark.h"
+#import "ANEGPUTraining.h"

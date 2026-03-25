@@ -1,0 +1,492 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AABB001122334455DEADBEEF /* ANEBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = AABB001122334455BEEFDEAD /* ANEBenchmark.m */; };
+		CCDD001122334455DEADBEEF /* ANEInferenceBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = CCDD001122334455BEEFDEAD /* ANEInferenceBenchmark.m */; };
+		DDEE001122334455DEADBEEF /* ANEUltimateBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = DDEE001122334455BEEFDEAD /* ANEUltimateBenchmark.m */; };
+		EEFF221122334455DEADBEEF /* ANEGPUTraining.m in Sources */ = {isa = PBXBuildFile; fileRef = EEFF221122334455BEEFDEAD /* ANEGPUTraining.m */; };
+		12B715D473EE3456DE2630B8 /* ANETrainStep.m in Sources */ = {isa = PBXBuildFile; fileRef = A2CB97C7FB8BB9C1EAF0DC29 /* ANETrainStep.m */; };
+		1652F7B43048C4D775C39CFF /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 041620B78119B76A485DF652 /* Accelerate.framework */; };
+		EEFF001122334455DEADBE01 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEFF001122334455DEADBE02 /* Metal.framework */; };
+		EEFF001122334455DEADBE03 /* MetalPerformanceShaders.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEFF001122334455DEADBE04 /* MetalPerformanceShaders.framework */; };
+		17DEB31E511438EB84B8EA4E /* ANEThermalMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95167C5D25AA34495422CB3 /* ANEThermalMonitor.swift */; };
+		28CAD2E25DA0ED214D2C8165 /* ANERMSNorm.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ACE809697043F47D904DDA7 /* ANERMSNorm.m */; };
+		2E815CF1B3D515651992260C /* ANELinear.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A2351760D6FC9FFACE58301 /* ANELinear.m */; };
+		3135507077F840E3D43E3F01 /* ANEWeightTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C3F904BCC7A4B01BC3EC9933 /* ANEWeightTest.m */; };
+		46E5D11D81CC995B6E51236F /* ANEDynamicTrain.m in Sources */ = {isa = PBXBuildFile; fileRef = 316F37BC92DBC543BA109652 /* ANEDynamicTrain.m */; };
+		5204EF9C27811EA138A250C0 /* tokenizer.bin in Resources */ = {isa = PBXBuildFile; fileRef = A51355EECBECEF64884650A1 /* tokenizer.bin */; };
+		53A6243DD8F82508ACDC2EAB /* ANETrainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F49EEDB8C32767A91B838C8 /* ANETrainer.swift */; };
+		5E769D2578CE09E44A83DC9E /* IdentityConv.mlmodelc in Resources */ = {isa = PBXBuildFile; fileRef = B95C5E1A19B5A731F3658C74 /* IdentityConv.mlmodelc */; };
+		606F88905EEE0EDA015B1857 /* ANEFFN.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F448CA058935DC87D3BE1E1 /* ANEFFN.m */; };
+		66E4BD6D6C09DBBBD74DA052 /* ANEThermal.m in Sources */ = {isa = PBXBuildFile; fileRef = 005286189923EFD8287D7EBD /* ANEThermal.m */; };
+		6E297AC0996329C5EED261A1 /* ANERE.m in Sources */ = {isa = PBXBuildFile; fileRef = C41137ABD55B6418B27AF2DD /* ANERE.m */; };
+		6E604E0C03984315654D8FA2 /* ANEDirectTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 852459B9C011765BF87A2418 /* ANEDirectTest.m */; };
+		82A278A795AD60FFA4375B60 /* TrainingDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16DFCF025505E6108F7C8241 /* TrainingDashboardView.swift */; };
+		863094F9A0E3111F04A4CBA8 /* ANEBackward.m in Sources */ = {isa = PBXBuildFile; fileRef = 3ED4114127E2091ED2030115 /* ANEBackward.m */; };
+		8FB426FFD0E5FCFFAB125587 /* ANECompileLimitStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 99354E96FB6DD2CFD9109A45 /* ANECompileLimitStress.m */; };
+		9B23BB26DC002498F51C0261 /* ANEProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07CD3BC94CEED2A73F0FB224 /* ANEProbe.swift */; };
+		A177552FB931D07CAF63E3E5 /* ANETokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11485610999AE31B5E1741B9 /* ANETokenizer.m */; };
+		AF733BFD11D7A6F496F31B5C /* tinystories_data00.bin in Resources */ = {isa = PBXBuildFile; fileRef = 3672168E8AD124EC71342038 /* tinystories_data00.bin */; };
+		B21D310A0336012FA397C19D /* ANEDataPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = 4054AFC9DC8A0FAB7A3523D4 /* ANEDataPipeline.m */; };
+		BA4195C07E8986A96ED4DBA3 /* ANEBackgroundTraining.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE63A0C61D359677BCA0AD2E /* ANEBackgroundTraining.swift */; };
+		BD3F3098639A4CBEC9A6CED9 /* ANEReduceDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0CA1CA2E4CC3AEC52E437 /* ANEReduceDebug.m */; };
+		C33D58420C24416FB8DE604E /* ANEInference.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FF95DACB89585CA7C6BD60B /* ANEInference.m */; };
+		CD32C2F65E97388CF4AFB1E8 /* ANEAttention.m in Sources */ = {isa = PBXBuildFile; fileRef = FEDF50F4DD989016EC9A711D /* ANEAttention.m */; };
+		CE5C07A0BBE0FA54A34E39D7 /* ANETrainingEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 382EE15F3AAF1E9383C2946D /* ANETrainingEngine.m */; };
+		E53A187088100333901566C0 /* ANECheckpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 5107BC573FE468F948CA9167 /* ANECheckpoint.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AABB001122334455CAFEBABE /* ANEBenchmark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEBenchmark.h; sourceTree = "<group>"; };
+		AABB001122334455BEEFDEAD /* ANEBenchmark.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEBenchmark.m; sourceTree = "<group>"; };
+		CCDD001122334455CAFEBABE /* ANEInferenceBenchmark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEInferenceBenchmark.h; sourceTree = "<group>"; };
+		CCDD001122334455BEEFDEAD /* ANEInferenceBenchmark.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEInferenceBenchmark.m; sourceTree = "<group>"; };
+		DDEE001122334455CAFEBABE /* ANEUltimateBenchmark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEUltimateBenchmark.h; sourceTree = "<group>"; };
+		DDEE001122334455BEEFDEAD /* ANEUltimateBenchmark.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEUltimateBenchmark.m; sourceTree = "<group>"; };
+		EEFF221122334455CAFEBABE /* ANEGPUTraining.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEGPUTraining.h; sourceTree = "<group>"; };
+		EEFF221122334455BEEFDEAD /* ANEGPUTraining.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEGPUTraining.m; sourceTree = "<group>"; };
+		00154EB8DF04319A06247B89 /* ANEDirectTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEDirectTest.h; sourceTree = "<group>"; };
+		005286189923EFD8287D7EBD /* ANEThermal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEThermal.m; sourceTree = "<group>"; };
+		041620B78119B76A485DF652 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		EEFF001122334455DEADBE02 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		EEFF001122334455DEADBE04 /* MetalPerformanceShaders.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalPerformanceShaders.framework; path = System/Library/Frameworks/MetalPerformanceShaders.framework; sourceTree = SDKROOT; };
+		07CD3BC94CEED2A73F0FB224 /* ANEProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANEProbe.swift; sourceTree = "<group>"; };
+		0AC0CA1CA2E4CC3AEC52E437 /* ANEReduceDebug.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEReduceDebug.m; sourceTree = "<group>"; };
+		11485610999AE31B5E1741B9 /* ANETokenizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANETokenizer.m; sourceTree = "<group>"; };
+		16DFCF025505E6108F7C8241 /* TrainingDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingDashboardView.swift; sourceTree = "<group>"; };
+		171D80C495D6225D4993F37B /* ANECheckpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANECheckpoint.h; sourceTree = "<group>"; };
+		1A2351760D6FC9FFACE58301 /* ANELinear.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANELinear.m; sourceTree = "<group>"; };
+		1ACE809697043F47D904DDA7 /* ANERMSNorm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANERMSNorm.m; sourceTree = "<group>"; };
+		1C1FFE4B4DEAA7DC5C2D8BB9 /* ANEStoriesMIL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEStoriesMIL.h; sourceTree = "<group>"; };
+		1F49EEDB8C32767A91B838C8 /* ANETrainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainer.swift; sourceTree = "<group>"; };
+		23FD0B6F4D19C9585C6A22B9 /* ANECompileLimitStress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANECompileLimitStress.h; sourceTree = "<group>"; };
+		276620A1A216D82F9A27786B /* ANEReduceDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEReduceDebug.h; sourceTree = "<group>"; };
+		2B2FF4FF3C4731E4730F9D26 /* ANEThermal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEThermal.h; sourceTree = "<group>"; };
+		316F37BC92DBC543BA109652 /* ANEDynamicTrain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEDynamicTrain.m; sourceTree = "<group>"; };
+		3672168E8AD124EC71342038 /* tinystories_data00.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = tinystories_data00.bin; sourceTree = "<group>"; };
+		382EE15F3AAF1E9383C2946D /* ANETrainingEngine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANETrainingEngine.m; sourceTree = "<group>"; };
+		3ED4114127E2091ED2030115 /* ANEBackward.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEBackward.m; sourceTree = "<group>"; };
+		4054AFC9DC8A0FAB7A3523D4 /* ANEDataPipeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEDataPipeline.m; sourceTree = "<group>"; };
+		42BAFBD91F583AD9D12AB99A /* ANEAttention.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEAttention.h; sourceTree = "<group>"; };
+		5107BC573FE468F948CA9167 /* ANECheckpoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANECheckpoint.m; sourceTree = "<group>"; };
+		5F448CA058935DC87D3BE1E1 /* ANEFFN.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEFFN.m; sourceTree = "<group>"; };
+		76CA7913AB31BE7911F3E7D4 /* ANERMSNorm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANERMSNorm.h; sourceTree = "<group>"; };
+		775CE9F1EC5C92CDF2A8E7C6 /* ANEDynamicTrain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEDynamicTrain.h; sourceTree = "<group>"; };
+		7AFEBF96665DEA628C97A120 /* ANETrainStep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANETrainStep.h; sourceTree = "<group>"; };
+		7FF95DACB89585CA7C6BD60B /* ANEInference.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEInference.m; sourceTree = "<group>"; };
+		852459B9C011765BF87A2418 /* ANEDirectTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEDirectTest.m; sourceTree = "<group>"; };
+		9061E6C395A881C9C93EE7C5 /* ANERE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANERE.h; sourceTree = "<group>"; };
+		95396D066B1895929A6C339E /* ANELinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANELinear.h; sourceTree = "<group>"; };
+		99354E96FB6DD2CFD9109A45 /* ANECompileLimitStress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANECompileLimitStress.m; sourceTree = "<group>"; };
+		9D197EB8C906570134A8C40A /* ANETokenizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANETokenizer.h; sourceTree = "<group>"; };
+		A2CB97C7FB8BB9C1EAF0DC29 /* ANETrainStep.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANETrainStep.m; sourceTree = "<group>"; };
+		A51355EECBECEF64884650A1 /* tokenizer.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = tokenizer.bin; sourceTree = "<group>"; };
+		A90B9C2F9A5B318A7D0B4745 /* ANEInference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEInference.h; sourceTree = "<group>"; };
+		A95167C5D25AA34495422CB3 /* ANEThermalMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANEThermalMonitor.swift; sourceTree = "<group>"; };
+		AE63A0C61D359677BCA0AD2E /* ANEBackgroundTraining.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANEBackgroundTraining.swift; sourceTree = "<group>"; };
+		B43170CB7C341B35135DF55C /* ANEFFN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEFFN.h; sourceTree = "<group>"; };
+		B95C5E1A19B5A731F3658C74 /* IdentityConv.mlmodelc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = IdentityConv.mlmodelc; sourceTree = SOURCE_ROOT; };
+		BCA557D4A7220C411E69157A /* ANEWeightTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEWeightTest.h; sourceTree = "<group>"; };
+		C3F904BCC7A4B01BC3EC9933 /* ANEWeightTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEWeightTest.m; sourceTree = "<group>"; };
+		C41137ABD55B6418B27AF2DD /* ANERE.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANERE.m; sourceTree = "<group>"; };
+		D765A480C6ADCEC7B7952CE1 /* ANEStoriesCPUOps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEStoriesCPUOps.h; sourceTree = "<group>"; };
+		E68951BB45135651F9E45217 /* ANETrainingConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANETrainingConfig.h; sourceTree = "<group>"; };
+		E8661E284EEAD9E04B4D6616 /* ANETrainingEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANETrainingEngine.h; sourceTree = "<group>"; };
+		F75054D40AA46AB1E7CDC135 /* ANEDataPipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEDataPipeline.h; sourceTree = "<group>"; };
+		F7CF6EC2674CF810B7C2A1A7 /* ANEProbe.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ANEProbe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB6FCB76B317F0E6BA345029 /* ANEBackward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEBackward.h; sourceTree = "<group>"; };
+		FEDF50F4DD989016EC9A711D /* ANEAttention.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEAttention.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		896658E906F16233FBDE787A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1652F7B43048C4D775C39CFF /* Accelerate.framework in Frameworks */,
+				EEFF001122334455DEADBE01 /* Metal.framework in Frameworks */,
+				EEFF001122334455DEADBE03 /* MetalPerformanceShaders.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		445798E921227C0887BA0F3C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F7CF6EC2674CF810B7C2A1A7 /* ANEProbe.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E46FFFAEC78DEEFA5DB0A514 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				041620B78119B76A485DF652 /* Accelerate.framework */,
+				EEFF001122334455DEADBE02 /* Metal.framework */,
+				EEFF001122334455DEADBE04 /* MetalPerformanceShaders.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F2B5F0D20AEA448F30D375DC = {
+			isa = PBXGroup;
+			children = (
+				42BAFBD91F583AD9D12AB99A /* ANEAttention.h */,
+				FEDF50F4DD989016EC9A711D /* ANEAttention.m */,
+				AE63A0C61D359677BCA0AD2E /* ANEBackgroundTraining.swift */,
+				AABB001122334455CAFEBABE /* ANEBenchmark.h */,
+				AABB001122334455BEEFDEAD /* ANEBenchmark.m */,
+				CCDD001122334455CAFEBABE /* ANEInferenceBenchmark.h */,
+				CCDD001122334455BEEFDEAD /* ANEInferenceBenchmark.m */,
+				DDEE001122334455CAFEBABE /* ANEUltimateBenchmark.h */,
+				DDEE001122334455BEEFDEAD /* ANEUltimateBenchmark.m */,
+				EEFF221122334455CAFEBABE /* ANEGPUTraining.h */,
+				EEFF221122334455BEEFDEAD /* ANEGPUTraining.m */,
+				FB6FCB76B317F0E6BA345029 /* ANEBackward.h */,
+				3ED4114127E2091ED2030115 /* ANEBackward.m */,
+				171D80C495D6225D4993F37B /* ANECheckpoint.h */,
+				5107BC573FE468F948CA9167 /* ANECheckpoint.m */,
+				23FD0B6F4D19C9585C6A22B9 /* ANECompileLimitStress.h */,
+				99354E96FB6DD2CFD9109A45 /* ANECompileLimitStress.m */,
+				F75054D40AA46AB1E7CDC135 /* ANEDataPipeline.h */,
+				4054AFC9DC8A0FAB7A3523D4 /* ANEDataPipeline.m */,
+				00154EB8DF04319A06247B89 /* ANEDirectTest.h */,
+				852459B9C011765BF87A2418 /* ANEDirectTest.m */,
+				775CE9F1EC5C92CDF2A8E7C6 /* ANEDynamicTrain.h */,
+				316F37BC92DBC543BA109652 /* ANEDynamicTrain.m */,
+				B43170CB7C341B35135DF55C /* ANEFFN.h */,
+				5F448CA058935DC87D3BE1E1 /* ANEFFN.m */,
+				A90B9C2F9A5B318A7D0B4745 /* ANEInference.h */,
+				7FF95DACB89585CA7C6BD60B /* ANEInference.m */,
+				95396D066B1895929A6C339E /* ANELinear.h */,
+				1A2351760D6FC9FFACE58301 /* ANELinear.m */,
+				07CD3BC94CEED2A73F0FB224 /* ANEProbe.swift */,
+				9061E6C395A881C9C93EE7C5 /* ANERE.h */,
+				C41137ABD55B6418B27AF2DD /* ANERE.m */,
+				276620A1A216D82F9A27786B /* ANEReduceDebug.h */,
+				0AC0CA1CA2E4CC3AEC52E437 /* ANEReduceDebug.m */,
+				76CA7913AB31BE7911F3E7D4 /* ANERMSNorm.h */,
+				1ACE809697043F47D904DDA7 /* ANERMSNorm.m */,
+				D765A480C6ADCEC7B7952CE1 /* ANEStoriesCPUOps.h */,
+				1C1FFE4B4DEAA7DC5C2D8BB9 /* ANEStoriesMIL.h */,
+				2B2FF4FF3C4731E4730F9D26 /* ANEThermal.h */,
+				005286189923EFD8287D7EBD /* ANEThermal.m */,
+				A95167C5D25AA34495422CB3 /* ANEThermalMonitor.swift */,
+				9D197EB8C906570134A8C40A /* ANETokenizer.h */,
+				11485610999AE31B5E1741B9 /* ANETokenizer.m */,
+				1F49EEDB8C32767A91B838C8 /* ANETrainer.swift */,
+				E68951BB45135651F9E45217 /* ANETrainingConfig.h */,
+				E8661E284EEAD9E04B4D6616 /* ANETrainingEngine.h */,
+				382EE15F3AAF1E9383C2946D /* ANETrainingEngine.m */,
+				7AFEBF96665DEA628C97A120 /* ANETrainStep.h */,
+				A2CB97C7FB8BB9C1EAF0DC29 /* ANETrainStep.m */,
+				BCA557D4A7220C411E69157A /* ANEWeightTest.h */,
+				C3F904BCC7A4B01BC3EC9933 /* ANEWeightTest.m */,
+				B95C5E1A19B5A731F3658C74 /* IdentityConv.mlmodelc */,
+				3672168E8AD124EC71342038 /* tinystories_data00.bin */,
+				A51355EECBECEF64884650A1 /* tokenizer.bin */,
+				16DFCF025505E6108F7C8241 /* TrainingDashboardView.swift */,
+				E46FFFAEC78DEEFA5DB0A514 /* Frameworks */,
+				445798E921227C0887BA0F3C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5C88DA1183619D99A009AF4A /* ANEProbe */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 239039663F47E7DBD4A9C0F6 /* Build configuration list for PBXNativeTarget "ANEProbe" */;
+			buildPhases = (
+				07B515FCC6955FE49B2303AB /* Sources */,
+				7483DCB36F2995AAFD721DF5 /* Resources */,
+				896658E906F16233FBDE787A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ANEProbe;
+			packageProductDependencies = (
+			);
+			productName = ANEProbe;
+			productReference = F7CF6EC2674CF810B7C2A1A7 /* ANEProbe.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D982B6DABE1449898A94E05 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					5C88DA1183619D99A009AF4A = {
+						DevelopmentTeam = SMPDFBGL64;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 4F71C587E9ECC1E38DB77600 /* Build configuration list for PBXProject "ANEProbe" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = F2B5F0D20AEA448F30D375DC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 445798E921227C0887BA0F3C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5C88DA1183619D99A009AF4A /* ANEProbe */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7483DCB36F2995AAFD721DF5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E769D2578CE09E44A83DC9E /* IdentityConv.mlmodelc in Resources */,
+				AF733BFD11D7A6F496F31B5C /* tinystories_data00.bin in Resources */,
+				5204EF9C27811EA138A250C0 /* tokenizer.bin in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		07B515FCC6955FE49B2303AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD32C2F65E97388CF4AFB1E8 /* ANEAttention.m in Sources */,
+				BA4195C07E8986A96ED4DBA3 /* ANEBackgroundTraining.swift in Sources */,
+				AABB001122334455DEADBEEF /* ANEBenchmark.m in Sources */,
+				CCDD001122334455DEADBEEF /* ANEInferenceBenchmark.m in Sources */,
+				DDEE001122334455DEADBEEF /* ANEUltimateBenchmark.m in Sources */,
+				EEFF221122334455DEADBEEF /* ANEGPUTraining.m in Sources */,
+				863094F9A0E3111F04A4CBA8 /* ANEBackward.m in Sources */,
+				E53A187088100333901566C0 /* ANECheckpoint.m in Sources */,
+				8FB426FFD0E5FCFFAB125587 /* ANECompileLimitStress.m in Sources */,
+				B21D310A0336012FA397C19D /* ANEDataPipeline.m in Sources */,
+				6E604E0C03984315654D8FA2 /* ANEDirectTest.m in Sources */,
+				46E5D11D81CC995B6E51236F /* ANEDynamicTrain.m in Sources */,
+				606F88905EEE0EDA015B1857 /* ANEFFN.m in Sources */,
+				C33D58420C24416FB8DE604E /* ANEInference.m in Sources */,
+				2E815CF1B3D515651992260C /* ANELinear.m in Sources */,
+				9B23BB26DC002498F51C0261 /* ANEProbe.swift in Sources */,
+				6E297AC0996329C5EED261A1 /* ANERE.m in Sources */,
+				28CAD2E25DA0ED214D2C8165 /* ANERMSNorm.m in Sources */,
+				BD3F3098639A4CBEC9A6CED9 /* ANEReduceDebug.m in Sources */,
+				66E4BD6D6C09DBBBD74DA052 /* ANEThermal.m in Sources */,
+				17DEB31E511438EB84B8EA4E /* ANEThermalMonitor.swift in Sources */,
+				A177552FB931D07CAF63E3E5 /* ANETokenizer.m in Sources */,
+				12B715D473EE3456DE2630B8 /* ANETrainStep.m in Sources */,
+				53A6243DD8F82508ACDC2EAB /* ANETrainer.swift in Sources */,
+				CE5C07A0BBE0FA54A34E39D7 /* ANETrainingEngine.m in Sources */,
+				3135507077F840E3D43E3F01 /* ANEWeightTest.m in Sources */,
+				82A278A795AD60FFA4375B60 /* TrainingDashboardView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		65E46E2A38C4E6AE832BB7FE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6D1DCC793FE271216C25E9DD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SMPDFBGL64;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.klincov.aneprobe;
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "ANEProbe-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7F3B59A16472206CA1492807 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		9D8078894D2417113335D598 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SMPDFBGL64;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.klincov.aneprobe;
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "ANEProbe-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		239039663F47E7DBD4A9C0F6 /* Build configuration list for PBXNativeTarget "ANEProbe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D8078894D2417113335D598 /* Debug */,
+				6D1DCC793FE271216C25E9DD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4F71C587E9ECC1E38DB77600 /* Build configuration list for PBXProject "ANEProbe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65E46E2A38C4E6AE832BB7FE /* Debug */,
+				7F3B59A16472206CA1492807 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D982B6DABE1449898A94E05 /* Project object */;
+}
