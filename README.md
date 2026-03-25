@@ -17,7 +17,7 @@ The first open-source project that enables on-device transformer training on App
 | Requires jailbreak | N/A | No | **No** |
 | Hardware utilization | GPU cluster | CPU/GPU only | **Dedicated ML chip** |
 
-The Apple Neural Engine is a dedicated chip in every modern iPhone designed for ML inference. It's faster and more power-efficient than CPU/GPU for tensor operations — but Apple never exposed it for training. This project changes that.
+The Apple Neural Engine is a dedicated chip in every modern iPhone designed for ML inference. It's faster and more power-efficient than CPU/GPU for tensor operations. Apple once offered public ANE training APIs (MLCompute, 2020) but deprecated them without replacement. This project restores that capability via low-level private APIs.
 
 ---
 
@@ -312,7 +312,7 @@ ANEProbe/
 
 ## Key Discoveries
 
-During reverse engineering, several undocumented ANE behaviors were found. Highlights:
+During development, several low-level ANE behaviors were discovered that are not covered by Apple's public documentation. Highlights:
 
 - **16 KB IOSurface Minimum** — silent eval failure below this size
 - **239 Concurrent Model Limit** (vs 119 on macOS), full reclaim on unload
