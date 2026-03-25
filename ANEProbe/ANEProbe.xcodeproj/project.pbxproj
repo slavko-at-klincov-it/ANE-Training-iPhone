@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AABB00FF112233DEAD11 /* InfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00FF112233CAFE11 /* InfoSheet.swift */; };
+		AABBFF0100112233DEAD /* ANETrainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0100112233CAFE /* ANETrainerApp.swift */; };
+		AABBFF0200112233DEAD /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0200112233CAFE /* TrainingView.swift */; };
+		AABBFF0300112233DEAD /* DataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0300112233CAFE /* DataView.swift */; };
+		AABBFF0400112233DEAD /* InferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0400112233CAFE /* InferenceView.swift */; };
+		AABBFF0500112233DEAD /* ModelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0500112233CAFE /* ModelsView.swift */; };
+		AABBFF0600112233DEAD /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0600112233CAFE /* SettingsView.swift */; };
+		AABBFF0700112233DEAD /* InferenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0700112233CAFE /* InferenceManager.swift */; };
+		AABBFF0800112233DEAD /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBFF0800112233CAFE /* ModelManager.swift */; };
 		AABB001122334455DEADBEEF /* ANEBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = AABB001122334455BEEFDEAD /* ANEBenchmark.m */; };
 		CCDD001122334455DEADBEEF /* ANEInferenceBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = CCDD001122334455BEEFDEAD /* ANEInferenceBenchmark.m */; };
 		DDEE001122334455DEADBEEF /* ANEUltimateBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = DDEE001122334455BEEFDEAD /* ANEUltimateBenchmark.m */; };
@@ -43,6 +52,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AABB00FF112233CAFE11 /* InfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Helpers/InfoSheet.swift; sourceTree = "<group>"; };
+		AABBFF0100112233CAFE /* ANETrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/ANETrainerApp.swift; sourceTree = "<group>"; };
+		AABBFF0200112233CAFE /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Views/TrainingView.swift; sourceTree = "<group>"; };
+		AABBFF0300112233CAFE /* DataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Views/DataView.swift; sourceTree = "<group>"; };
+		AABBFF0400112233CAFE /* InferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Views/InferenceView.swift; sourceTree = "<group>"; };
+		AABBFF0500112233CAFE /* ModelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Views/ModelsView.swift; sourceTree = "<group>"; };
+		AABBFF0600112233CAFE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Views/SettingsView.swift; sourceTree = "<group>"; };
+		AABBFF0700112233CAFE /* InferenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Helpers/InferenceManager.swift; sourceTree = "<group>"; };
+		AABBFF0800112233CAFE /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ANETrainerApp/Helpers/ModelManager.swift; sourceTree = "<group>"; };
 		AABB001122334455CAFEBABE /* ANEBenchmark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEBenchmark.h; sourceTree = "<group>"; };
 		AABB001122334455BEEFDEAD /* ANEBenchmark.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ANEBenchmark.m; sourceTree = "<group>"; };
 		CCDD001122334455CAFEBABE /* ANEInferenceBenchmark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ANEInferenceBenchmark.h; sourceTree = "<group>"; };
@@ -194,6 +212,15 @@
 				3672168E8AD124EC71342038 /* tinystories_data00.bin */,
 				A51355EECBECEF64884650A1 /* tokenizer.bin */,
 				16DFCF025505E6108F7C8241 /* TrainingDashboardView.swift */,
+				AABBFF0100112233CAFE /* ANETrainerApp.swift */,
+				AABBFF0200112233CAFE /* TrainingView.swift */,
+				AABBFF0300112233CAFE /* DataView.swift */,
+				AABBFF0400112233CAFE /* InferenceView.swift */,
+				AABBFF0500112233CAFE /* ModelsView.swift */,
+				AABBFF0600112233CAFE /* SettingsView.swift */,
+				AABBFF0700112233CAFE /* InferenceManager.swift */,
+				AABBFF0800112233CAFE /* ModelManager.swift */,
+				AABB00FF112233CAFE11 /* InfoSheet.swift */,
 				E46FFFAEC78DEEFA5DB0A514 /* Frameworks */,
 				445798E921227C0887BA0F3C /* Products */,
 			);
@@ -300,6 +327,15 @@
 				CE5C07A0BBE0FA54A34E39D7 /* ANETrainingEngine.m in Sources */,
 				3135507077F840E3D43E3F01 /* ANEWeightTest.m in Sources */,
 				82A278A795AD60FFA4375B60 /* TrainingDashboardView.swift in Sources */,
+				AABB00FF112233DEAD11 /* InfoSheet.swift in Sources */,
+				AABBFF0100112233DEAD /* ANETrainerApp.swift in Sources */,
+				AABBFF0200112233DEAD /* TrainingView.swift in Sources */,
+				AABBFF0300112233DEAD /* DataView.swift in Sources */,
+				AABBFF0400112233DEAD /* InferenceView.swift in Sources */,
+				AABBFF0500112233DEAD /* ModelsView.swift in Sources */,
+				AABBFF0600112233DEAD /* SettingsView.swift in Sources */,
+				AABBFF0700112233DEAD /* InferenceManager.swift in Sources */,
+				AABBFF0800112233DEAD /* ModelManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

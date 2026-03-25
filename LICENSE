@@ -1,0 +1,35 @@
+MIT License
+
+Copyright (c) 2026 Slavko Klincov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Legal Notice:
+
+This project uses Apple's private AppleNeuralEngine.framework APIs discovered
+through runtime introspection. No Apple proprietary source code or binaries
+are included in this repository. This constitutes reverse engineering for
+interoperability purposes under DMCA Section 1201(f) and fair use doctrine
+(see Sega v. Accolade, 977 F.2d 1510, 9th Cir. 1992).
+
+This software is NOT approved by Apple and cannot be distributed via the
+App Store. Distribution is limited to TestFlight, Ad-Hoc, sideloading,
+or source code distribution.

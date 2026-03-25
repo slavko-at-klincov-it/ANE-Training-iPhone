@@ -9,7 +9,7 @@ private let logger = Logger(subsystem: "com.klincov.aneprobe", category: "probe"
 struct ANEProbeApp: App {
     var body: some Scene {
         WindowGroup {
-            ANEProbeView()
+            ANETrainerAppView()  // Production app (change to ANEProbeView() for dev/benchmark mode)
         }
     }
 }

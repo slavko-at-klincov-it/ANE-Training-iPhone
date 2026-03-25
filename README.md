@@ -2,7 +2,7 @@
 
 **Train neural networks directly on your iPhone's Neural Engine — no jailbreak, no cloud, no data leaves your device.**
 
-The first open-source project that enables on-device transformer training on Apple's Neural Engine (ANE) via reverse-engineered private APIs. A 110M-parameter language model trains on an iPhone 15 Pro at 2.4 steps/second.
+The first open-source project that enables on-device transformer training on Apple's Neural Engine (ANE) via reverse-engineered private APIs. A 110M-parameter language model trains on an iPhone 15 Pro at 3.25 steps/second. Includes a production-ready app with training dashboard, data import, inference chat, and overnight scheduling.
 
 ---
 
@@ -12,7 +12,7 @@ The first open-source project that enables on-device transformer training on App
 |:--|:-:|:-:|:-:|
 | Privacy | Data leaves device | Private | **Private** |
 | Cost | $/hour | Free | **Free** |
-| Speed (110M model) | Fast | Very slow | **2.4 steps/s** |
+| Speed (110M model) | Fast | Very slow | **3.25 steps/s** |
 | Offline | No | Yes | **Yes** |
 | Requires jailbreak | N/A | No | **No** |
 | Hardware utilization | GPU cluster | CPU/GPU only | **Dedicated ML chip** |
@@ -197,13 +197,13 @@ The ANE doesn't natively support training — only inference. This project makes
 
 ## Limitations
 
-- **Speed** — 2.4 steps/s for 110M model. A cloud GPU does this 100-1000x faster. This is for personalization, not pre-training.
+- **Speed** — 3.25 steps/s for 110M model (optimized). A cloud GPU does this 100-1000x faster. This is for personalization, not pre-training.
 - **Model Size** — iPhone has ~2-3GB usable RAM. With Adam optimizer, ~110M parameters is the practical limit. Larger models need SGD (no momentum memory) or quantized optimizer states.
-- **Recompile Overhead** — Weights are baked into MIL programs. Every weight update requires recompiling 60 ANE kernels (~5s). Dynamic spatial packing (proven at 0.12ms/iter) can eliminate this but isn't yet integrated into the full training loop.
+- **Recompile Overhead** — Weights are baked into MIL programs. Every weight update requires recompiling 60 ANE kernels (~1s). Optimized to 42% overhead (was 62%) via ACCUM_STEPS=8 and skipping weight-free kernel recompilation.
 - **Batch Size 1** — Current implementation processes one sequence at a time. Gradient accumulation over 4 steps compensates.
 - **No App Store** — Uses private Apple APIs. Distribution via TestFlight, Ad-Hoc, or enterprise signing only. An App Store variant would need a CoreML wrapper.
 - **iPhone Only** — Tested on iPhone 15 Pro (A17 Pro). Other A-series chips likely work but are untested. iPad should work identically.
-- **No Inference UI** — Training only. A chat interface for the trained model is not yet built.
+- **Inference UI included** — Chat interface for testing the trained model with temperature and token controls.
 - **FP16 Precision** — ANE operates in FP16. Weight gradients accumulate in FP32 on CPU, but forward/backward passes have FP16 rounding. Sufficient for fine-tuning, may limit pre-training from scratch.
 
 ---
@@ -231,10 +231,13 @@ In environments without internet (flights, remote areas, secure facilities), the
 
 | Metric | Value |
 |:--|:--|
-| Training speed | **2.4 steps/s** (~230ms/step) |
-| Forward pass (12 layers) | ~24ms |
-| Backward pass (12 layers) | ~30ms |
-| Peak memory | ~1.4 GB (with Adam) |
+| ANE Training speed | **3.25 steps/s** (optimized) |
+| GPU Training speed | 2.17 steps/s (no recompilation) |
+| ANE Inference | 2,480 tok/s (96.9 ms/pass) |
+| CPU Inference | 3,215 tok/s (73.3 ms/pass) |
+| ANE Power (inference) | **2.51 W** (3.4x more efficient than CPU) |
+| ANE Tokens/Joule | **990** (vs CPU: 372) |
+| Peak memory (training) | ~2.4 GB (with Adam) |
 | ANE SRAM | ~32 MB |
 | Max concurrent ANE models | 239 |
 
@@ -302,6 +305,7 @@ ANEProbe/
 | [INTEGRATION.md](INTEGRATION.md) | **How to integrate ANE training into your own app** — API reference, code examples, data format |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture, data flow, layer diagrams, memory layout, ANE hardware specs |
 | [iOS_ANE_RESEARCH.md](iOS_ANE_RESEARCH.md) | Complete reverse engineering log (15 steps), all findings with data |
+| [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) | **Comprehensive benchmark results** — ANE vs GPU vs CPU, power, efficiency, thermal |
 | [ROADMAP_iOS.md](ROADMAP_iOS.md) | Phase 1-3 task status, what's done, what's open |
 
 ---
