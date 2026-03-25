@@ -340,9 +340,22 @@ Apple once provided **public APIs for ANE training** — then removed them witho
 
 **The gap:** Apple deprecated `MLCompute` (the only public ANE training API) without providing an alternative. CoreML's on-device training is limited to fine-tuning last layers and cannot backpropagate through full transformers. This project fills that gap by accessing the ANE directly via private APIs.
 
-**Relevant Apple documentation:**
-- [`MLCDevice.ane()`](https://developer.apple.com/documentation/mlcompute/mlcdevice/ane()) — deprecated public ANE device selector
-- [`MLCTrainingGraph`](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/) — deprecated training graph with ANE support
+**Apple's deprecated MLCompute training API (was fully documented):**
+
+| API | What it did | Documentation |
+|:----|:------------|:-------------|
+| `MLCDevice.ane()` | Select ANE as compute target | [Link](https://developer.apple.com/documentation/mlcompute/mlcdevice/ane()) |
+| `MLCTrainingGraph` | Full training graph with auto-differentiation | [Link](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/) |
+| `MLCTrainingGraph.compile(options:device:)` | Compile graph for ANE/GPU/CPU | [Link](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/compile(options:device:)) |
+| `MLCTrainingGraph.optimizer` | Set optimizer (Adam, SGD) | [Link](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/optimizer) |
+| `MLCTrainingGraph.gradientData(forParameter:layer:)` | Access gradients per parameter | [Link](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/gradientdata(forparameter:layer:)) |
+| `MLCTrainingGraph.stopGradient(for:)` | Exclude tensors from gradient computation | [Link](https://developer.apple.com/documentation/mlcompute/mlctraininggraph/stopgradient(for:)) |
+| `MLCSGDOptimizer` / `MLCAdamOptimizer` | Built-in optimizers | [Link](https://developer.apple.com/documentation/mlcompute/mlcsgdoptimizer) |
+| `MLCDeviceType.ane` | ANE device type enum | [Link](https://developer.apple.com/documentation/mlcompute/mlcdevicetype/ane) |
+
+This was a complete training framework — auto-differentiation, optimizer, gradient access, ANE support. All deprecated, no replacement.
+
+**Other relevant Apple documentation:**
 - [`com.apple.developer.coreml.neural-engine-access`](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.coreml.neural-engine-access) — entitlement for CoreML ANE access (inference only)
 - [`MLNeuralEngineComputeDevice`](https://developer.apple.com/documentation/coreml/mlneuralenginecomputedevice) — read-only ANE device info
 - [`Personalizing a Model with On-Device Updates`](https://developer.apple.com/documentation/coreml/personalizing-a-model-with-on-device-updates) — CoreML fine-tuning (last layers only)
