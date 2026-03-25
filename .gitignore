@@ -1,7 +1,8 @@
 .venv/
 *.mlpackage/
 *.mlmodelc/
-ANEProbe/ANEProbe.xcodeproj/
+ANEProbe/ANEProbe.xcodeproj/xcuserdata/
+ANEProbe/ANEProbe.xcodeproj/project.xcworkspace/xcuserdata/
 ANEProbe/IdentityConv.mlmodelc/
 .DS_Store
 xcuserdata/
