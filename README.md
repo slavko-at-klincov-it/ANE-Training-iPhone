@@ -360,6 +360,22 @@ This was a complete training framework — auto-differentiation, optimizer, grad
 - [`MLNeuralEngineComputeDevice`](https://developer.apple.com/documentation/coreml/mlneuralenginecomputedevice) — read-only ANE device info
 - [`Personalizing a Model with On-Device Updates`](https://developer.apple.com/documentation/coreml/personalizing-a-model-with-on-device-updates) — CoreML fine-tuning (last layers only)
 
+### The Current Situation: Every Door Is Closed
+
+As of March 2026, there is **no supported path** for full on-device model training on iPhone for the App Store:
+
+| Approach | Problem |
+|:---------|:--------|
+| **MLCompute** (`MLCDevice.ane()`) | Had full ANE training support — **Apple deprecated it** (2022), no replacement |
+| **CoreML** (`MLUpdateTask`) | Only fine-tunes last FC/Conv layers — **cannot train transformers** |
+| **MLX Swift** | Has training + auto-diff, but Apple says it's **"intended for research, not production deployment"** |
+| **MPSGraph** | GPU training with auto-diff — but **no ANE target**, GPU-only |
+| **Private ANE APIs** (this project) | Full ANE training works — but **rejected by App Store** (private API usage) |
+
+Every path is either deprecated, limited, explicitly not for production, or blocked by App Store policy. Apple created a complete ANE training framework, deprecated it, and left nothing in its place.
+
+**The last hope: [WWDC 2026 (June)](https://developer.apple.com/wwdc/)** — Apple is introducing **Core AI** as the replacement for CoreML in iOS 27. If Core AI includes ANE training support, it would finally provide a sanctioned path for on-device model training in App Store apps. Until then, this project — via private APIs — remains the only way to train a full transformer on the iPhone's Neural Engine.
+
 **Legal basis:** Reverse engineering for interoperability under [DMCA §1201(f)](https://www.law.cornell.edu/uscode/text/17/1201) and fair use doctrine ([Sega v. Accolade, 1992](https://en.wikipedia.org/wiki/Sega_v._Accolade)). No Apple proprietary code is included in this repository.
 
 ---
