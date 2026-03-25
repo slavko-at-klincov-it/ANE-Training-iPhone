@@ -325,6 +325,9 @@ Full details: [iOS_ANE_RESEARCH.md](iOS_ANE_RESEARCH.md) (14 research steps docu
 
 ## Why Private APIs? Apple's ANE Training History
 
+> [!NOTE]
+> **Correction (March 2026):** Earlier versions of this README stated that Apple's ANE APIs were "undocumented" and that Apple "never exposed the ANE for training." This was incorrect. Apple provided a public, documented ANE training API via the [MLCompute framework](https://developer.apple.com/documentation/mlcompute) (2020) — discoverable with a simple search for "ANE Apple" on developer.apple.com. We initially missed this and have corrected all documentation. We apologize for the inaccuracy.
+
 Apple once provided **public APIs for ANE training** — then removed them without replacement:
 
 | Year | Framework | ANE Training Support | Status |
